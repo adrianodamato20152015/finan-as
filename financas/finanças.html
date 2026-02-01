@@ -1545,6 +1545,9 @@
                 updateIncomesList();
                 updateBalance();
                 
+                // Salvar no Firebase
+                saveToFirebase();
+                
                 // Limpar o formulário
                 document.getElementById('income-form').reset();
                 document.getElementById('income-date').value = getTodayDate();
@@ -1647,6 +1650,9 @@
                 
                 updateIncomesList();
                 updateBalance();
+                
+                // Salvar no Firebase
+                saveToFirebase();
             }
         }
         
@@ -1952,6 +1958,9 @@
                 updateChart();
                 saveDailyHistory();
                 
+                // Salvar no Firebase
+                saveToFirebase();
+                
                 // Limpar formulário
                 expenseForm.reset();
                 if (fileInput) fileInput.value = '';
@@ -2086,6 +2095,9 @@
                 updateDailyBalance();
                 updateChart();
                 saveDailyHistory();
+                
+                // Salvar no Firebase
+                saveToFirebase();
             } else {
                 console.error('Despesa não encontrada com ID:', expenseId);
             }
@@ -2574,6 +2586,7 @@
             
             renderConsignadosTable();
             updateConsignadosDisplay();
+            saveToFirebase();
         }
         
         // Deletar consignado
@@ -2582,6 +2595,7 @@
                 consignados = consignados.filter(c => c.id !== id);
                 renderConsignadosTable();
                 updateConsignadosDisplay();
+                saveToFirebase();
             }
         }
         
