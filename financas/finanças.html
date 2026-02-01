@@ -528,7 +528,6 @@
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span id="user-info" style="color: #666; font-size: 0.9rem;"></span>
                     <button onclick="handleLogout()" style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">Sair</button>
-                    <button onclick="clearAllFirebaseData()" style="padding: 6px 12px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">🗑️ Limpar Tudo</button>
                 </div>
             </div>
             <div style="margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -1035,60 +1034,6 @@
             }
         }
         
-        async function clearAllFirebaseData() {
-            if (!confirm('⚠️ ATENÇÃO! Isso vai apagar TODOS os seus dados do Firebase de TODOS os meses.\n\nTem certeza?')) {
-                return;
-            }
-            
-            if (!confirm('Confirma novamente? Esta ação não pode ser desfeita!')) {
-                return;
-            }
-            
-            try {
-                showLoading(true);
-                
-                if (!currentUser || !userDocRef) {
-                    alert('Erro: usuário não autenticado');
-                    showLoading(false);
-                    return;
-                }
-                
-                // Buscar todos os documentos do usuário
-                const snapshot = await userDocRef.get();
-                
-                // Deletar cada documento
-                const deletePromises = [];
-                snapshot.forEach(doc => {
-                    deletePromises.push(doc.ref.delete());
-                });
-                
-                await Promise.all(deletePromises);
-                
-                // Resetar variáveis locais
-                expenses = [];
-                extraIncomes = [];
-                categories = {};
-                consignados = [];
-                dailyHistory = {};
-                monthlyIncome = 0;
-                monthlyData = {};
-                
-                // Atualizar interface
-                updateBalance();
-                updateExpensesList();
-                updateConsignadosList();
-                updateIncomesList();
-                
-                showLoading(false);
-                alert(`✅ Dados limpos com sucesso! ${deletePromises.length} meses foram apagados.`);
-                
-            } catch (error) {
-                showLoading(false);
-                console.error('Erro ao limpar dados:', error);
-                alert('Erro ao limpar dados do Firebase. Veja o console para detalhes.');
-            }
-        }
-        
         function getErrorMessage(code) {
             const messages = {
                 'auth/email-already-in-use': 'Este email já está em uso',
@@ -1178,8 +1123,12 @@
         }
         
         async function saveToFirebase() {
+            console.log('🔍 DEBUG saveToFirebase - currentUser:', currentUser ? 'OK' : 'NULL');
+            console.log('🔍 DEBUG saveToFirebase - userDocRef:', userDocRef ? 'OK' : 'NULL');
+            
             if (!currentUser || !userDocRef) {
-                console.log('Usuário não autenticado, salvando apenas localmente');
+                console.error('❌ Usuário não autenticado! currentUser:', currentUser, 'userDocRef:', userDocRef);
+                alert('⚠️ ERRO: Usuário não autenticado. Faça login novamente.');
                 return;
             }
             
@@ -1199,6 +1148,8 @@
                     lastModified: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
+                console.log('💾 Salvando no Firebase:', monthKey, dataToSave);
+                
                 await userDocRef.doc(monthKey).set(dataToSave, { merge: true });
                 
                 // Salvar mês de trabalho atual
@@ -1206,10 +1157,10 @@
                     workingMonthYear: workingMonthYear
                 }, { merge: true });
                 
-                console.log('Dados salvos no Firebase');
+                console.log('✅ Dados salvos no Firebase com sucesso!');
             } catch (error) {
-                console.error('Erro ao salvar no Firebase:', error);
-                alert('Erro ao sincronizar com a nuvem. Verifique sua conexão.');
+                console.error('❌ Erro ao salvar no Firebase:', error);
+                alert('Erro ao sincronizar com a nuvem: ' + error.message);
             }
         }
         
