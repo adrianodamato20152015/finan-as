@@ -138,20 +138,26 @@
             }
             
             populateBtn.disabled = true;
+            loginBtn.disabled = true;
             showStatus('Carregando dados do JSON...', 'info');
             
             try {
-                // Carregar o arquivo JSON
+                // Carregar o arquivo JSON automaticamente
                 const response = await fetch('controle-financeiro-2026-01-20 (8).json');
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar arquivo JSON');
+                }
                 const data = await response.json();
                 
-                showStatus('Salvando dados no Firebase...', 'info');
+                showStatus('Processando dados... Isso pode levar alguns segundos...', 'info');
                 
                 const userDocRef = db.collection('users').doc(currentUser.uid).collection('months');
                 
                 // Salvar cada mês
                 let monthCount = 0;
-                for (const monthYear in data.monthlyData) {
+                const monthKeys = Object.keys(data.monthlyData || {});
+                
+                for (const monthYear of monthKeys) {
                     const monthKey = monthYear.replace('/', '-');
                     const monthData = data.monthlyData[monthYear];
                     
@@ -166,7 +172,7 @@
                     });
                     
                     monthCount++;
-                    showStatus(`Salvando... ${monthCount} meses processados`, 'info');
+                    showStatus(`Salvando... ${monthCount}/${monthKeys.length} meses processados`, 'info');
                 }
                 
                 // Salvar mês de trabalho atual
@@ -174,11 +180,13 @@
                     workingMonthYear: data.workingMonthYear || '02/2026'
                 }, { merge: true });
                 
-                showStatus(`✅ Sucesso! ${monthCount} meses salvos no Firebase!`, 'success');
+                showStatus(`✅ SUCESSO! ${monthCount} meses salvos no Firebase!\n\nAgora você pode acessar https://financas2026-b7c2a.web.app e fazer login.\nTodos os seus dados estarão lá!`, 'success');
                 
             } catch (error) {
-                showStatus('Erro ao popular Firebase: ' + error.message, 'error');
+                console.error('Erro completo:', error);
+                showStatus('Erro ao popular Firebase: ' + error.message + '\n\nVerifique o console para mais detalhes.', 'error');
                 populateBtn.disabled = false;
+                loginBtn.disabled = false;
             }
         });
         
