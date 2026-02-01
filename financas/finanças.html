@@ -1097,10 +1097,25 @@
                     consignados = data.consignados || [];
                     dailyHistory = data.dailyHistory || {};
                     
+                    // Se tem monthlyIncome mas não tem receitas no array, criar receita genérica
+                    if (monthlyIncome > 0 && extraIncomes.filter(i => i.type === 'fixed').length === 0) {
+                        extraIncomes.push({
+                            id: Date.now(),
+                            description: 'Receita Mensal (Salário + Outros)',
+                            amount: monthlyIncome,
+                            category: 'Salário',
+                            type: 'fixed',
+                            date: new Date().toISOString().split('T')[0]
+                        });
+                        // Salvar a conversão no Firebase
+                        saveToFirebase();
+                    }
+                    
                     // Atualizar a interface com os dados carregados
                     updateDisplay();
                     updateExpensesList();
                     updateConsignadosList();
+                    updateIncomesList();
                 }
                 
                 console.log(`Dados carregados do Firebase: ${Object.keys(monthlyData).length} meses`);
