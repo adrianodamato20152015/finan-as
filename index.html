@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APA Delta do Parnaíba</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .app-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+        }
+
+        .app-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .app-description {
+            font-size: 1em;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .version {
+            text-align: center;
+            color: #999;
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏞️ APA Delta do Parnaíba</h1>
+        <p class="subtitle">Sistema de Monitoramento de Metas</p>
+        
+        <a href="Delta%20Metas%202026/delta_metas_atualizado%2034.html" class="app-card" target="_blank">
+            <span class="app-icon">📊</span>
+            <div class="app-title">Delta Metas 2026</div>
+            <div class="app-description">Monitoramento e gestão de metas da unidade de conservação</div>
+        </a>
+        
+        <div class="version">Versão 34 | Janeiro 2026</div>
+    </div>
+
+    <script>
+        // Log quando o app é clicado
+        document.querySelector('.app-card').addEventListener('click', function(e) {
+            console.log('Abrindo Delta Metas 2026...');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquete da Reunião</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Enquete da Reunião</h1>
+        <div id="inscricao">
+            <h2>Inscreva-se</h2>
+            <form id="formInscricao">
+                <input type="text" id="nome" placeholder="Nome ou Apelido" required>
+                <input type="text" id="telefone" placeholder="Telefone (opcional)" >
+                <button type="submit">Entrar</button>
+            </form>
+        </div>
+        <div id="painelChefe" style="display:none;">
+            <h2>Iniciar Enquete</h2>
+            <textarea id="meta" placeholder="Cole aqui a meta da reunião..."></textarea>
+            <button id="iniciarEnquete">Iniciar Enquete</button>
+        </div>
+        <div id="votacao" style="display:none;">
+            <h2>Votação</h2>
+            <div id="pergunta"></div>
+            <label>Esforço (0-100): <input type="number" id="esforco" min="0" max="100"></label><br>
+            <label>Efetividade (0-100): <input type="number" id="efetividade" min="0" max="100"></label><br>
+            <button id="enviarVoto">Enviar Voto</button>
+        </div>
+        <div id="resultado" style="display:none;">
+            <h2>Resultado</h2>
+            <canvas id="grafico" width="400" height="400"></canvas>
+            <div id="legenda"></div>
+        </div>
+    </div>
+</body>
+</html>

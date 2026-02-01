@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="app-version" content="2.5">
+    <title>Calendário 2026 - Programa Monitora</title>
+    <style>
+                /* Garantir fundo transparente nas imagens dos veículos */
+                .garage-vehicle, .day-symbol .symbol-item img {
+                    background: transparent !important;
+                }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Tela de Login */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .login-form input {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-form button {
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-form button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .login-error {
+            color: #dc3545;
+            text-align: center;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .login-error.active {
+            display: block;
+        }
+
+        /* Botões de Login/Logout */
+        .login-btn, .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .login-btn {
+            background: #28a745;
+        }
+
+        .login-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: #dc3545;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Ocultar controles de edição quando não logado */
+        .read-only .hamburger-btn,
+        .read-only .symbol-menu {
+            display: none !important;
+        }
+
+        .read-only .day {
+            cursor: default !important;
+        }
+
+        /* Badge de modo leitura */
+        .read-only-badge {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 193, 7, 0.9);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+        }
+
+        .read-only .read-only-badge {
+            display: block;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .month-selector button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .month-selector button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .month-year {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .hamburger-btn {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .hamburger-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .hamburger-btn.has-selection::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #28a745;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .symbol-menu {
+            position: absolute;
+            top: 70px;
+            right: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .symbol-menu.active {
+            display: block;
+        }
+
+        .symbol-menu h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .symbol-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .symbol-btn {
+            width: 70px;
+            height: 70px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 2em;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        .symbol-btn span {
+            font-size: 0.4em;
+            margin-top: 3px;
+            color: #666;
+        }
+
+        .symbol-btn:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+
+        .symbol-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .symbol-btn.active span {
+            color: white;
+        }
+
+        .calendar {
+            padding: 30px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            padding: 15px;
+            font-size: 1.1em;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day {
+            min-height: 120px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+            padding: 5px;
+            padding-top: 25px; /* Espaço para day-number e moon-phase posicionados absolute */
+        }
+
+        .day:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+        }
+
+        .day.other-month {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .day.today {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .day-number {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #333;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .day-symbol {
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex: 1;
+        }
+
+        .day-symbol .symbol-item {
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .day-symbol .symbol-item:hover {
+            transform: scale(1.2);
+        }
+
+        /* Indicadores de período */
+        .day-symbol .symbol-item.period-start::after,
+        .day-symbol .symbol-item.period-middle::before,
+        .day-symbol .symbol-item.period-middle::after,
+        .day-symbol .symbol-item.period-end::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                #667eea 0px,
+                #667eea 4px,
+                transparent 4px,
+                transparent 8px
+            );
+        }
+
+        .day-symbol .symbol-item.period-start::after {
+            right: -22px;
+        }
+
+        .day-symbol .symbol-item.period-end::before {
+            left: -22px;
+        }
+
+        .day-symbol .symbol-item.period-middle::before {
+            left: -22px;
+        }
+
+        .day-symbol .symbol-item.period-middle::after {
+            right: -22px;
+        }
+
+        .day-time {
+            font-size: 0.8em;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .moon-phase {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0.5;
+            font-size: 0.9em;
+            pointer-events: none;
+        }
+
+        .event-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .event-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-modal.active {
+            display: flex;
+        }
+
+        .detail-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .legend {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .legend h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .legend-symbol {
+            font-size: 1.8em;
+            width: 40px;
+            text-align: center;
+        }
+
+        .legend-text {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .status {
+            padding: 10px 30px;
+            text-align: center;
+            background: #d1ecf1;
+            color: #0c5460;
+            font-weight: 500;
+        }
+
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .header p {
+                font-size: 0.9em;
+            }
+
+            .calendar {
+                padding: 10px;
+            }
+
+            .calendar-controls {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .weekdays,
+            .days {
+                gap: 5px;
+            }
+
+            .weekday {
+                padding: 8px;
+                font-size: 0.8em;
+            }
+
+            .day {
+                min-height: 80px;
+                padding: 3px;
+                padding-top: 20px;
+            }
+
+            .hamburger-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.8em;
+            }
+
+            .symbol-menu {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+
+            .symbol-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.3em;
+            }
+
+            .day-number {
+                font-size: 0.85em;
+            }
+
+            .day-symbol {
+                font-size: 1.2em;
+            }
+
+            .day-symbol .symbol-item {
+                font-size: 0.9em;
+            }
+
+            .day-time {
+                font-size: 0.65em;
+            }
+
+            .moon-phase {
+                font-size: 0.7em;
+            }
+
+            .modal-content,
+            .detail-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .legend-items {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h2>🔐 Login</h2>
+            <p>Calendário 2026 - Programa Monitora</p>
+            <form class="login-form" id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+                <div class="login-error" id="loginError">Email ou senha incorretos</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botão de Logout -->
+    <button class="login-btn" id="loginBtn" style="display: none;">🔐 Entrar para Editar</button>
+    <button class="logout-btn" id="logoutBtn" style="display: none;">Sair</button>
+    <div class="read-only-badge" id="readOnlyBadge">👁️ Modo Visualização</div>
+
+    <div class="container" id="mainApp" style="display: none;">
+        <div class="header">
+            <h1>📅 Calendário 2026</h1>
+            <p>Calendário Interativo - Área de Proteção Ambiental Delta do Parnaíba</p>
+        </div>
+
+        <div class="status" id="status">
+            Conectando...
+        </div>
+
+        <div class="calendar-controls">
+            <div class="month-selector">
+                <button id="prevMonth">◀</button>
+                <div class="month-year" id="monthYear"></div>
+                <button id="nextMonth">▶</button>
+            </div>
+
+            <div>
+                <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+                <div class="symbol-menu" id="symbolMenu">
+                    <h3>Selecione um símbolo</h3>
+                    <div class="symbol-selector">
+                                                <button class="symbol-btn" data-symbol="🚗" title="Veículos na praia não">
+                                                    <span style="font-size:0.6em;color:#e74c3c;">🚗</span>
+                                                    <span>Veíc. praia NÃO</span>
+                                                </button>
+                        <button class="symbol-btn" data-symbol="🏖️" title="Férias">
+                            🏖️
+                            <span>Férias</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🏠" title="Home Office">
+                            🏠
+                            <span>Home</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🏢" title="Escritório">
+                            🏢
+                            <span>Escritório</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🤒" title="Doente">
+                            🤒
+                            <span>Doente</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="✈️" title="Viagem">
+                            ✈️
+                            <span>Viagem</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="📚" title="Treinamento">
+                            📚
+                            <span>Treino</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🐬" title="Monitoramento Peixe-Boi">
+                            🐬
+                            <span>Peixe-Boi</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🔭" title="Programa Monitora">
+                            🔭
+                            <span>Monitora</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="hilux" title="Hilux">
+                            <img src="img/hilux.png" alt="Hilux" style="width:45px;height:45px;">
+                            <span>Hilux</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="nova" title="Viatura">
+                            <img src="img/viatura.png" alt="Viatura" style="width:45px;height:45px;">
+                            <span>Viatura</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="nissan" title="Nissan">
+                            <img src="img/nissan.png" alt="Nissan" style="width:45px;height:45px;">
+                            <span>Nissan</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="bruta" title="Bruta">
+                            <img src="img/bruta.png" alt="Bruta" style="width:45px;height:45px;">
+                            <span>Bruta</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="nin" title="Nin">
+                            <img src="img/nin.png" alt="Nin" style="width:45px;height:45px;">
+                            <span>Nin</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="fiesta" title="Fiesta">
+                            <img src="img/fiesta.png" alt="Fiesta" style="width:45px;height:45px;">
+                            <span>Fiesta</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="⛵" title="Incursão Delta">
+                            ⛵
+                            <span>Inc.Delta</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🚤" title="Incursão Timonha">
+                            🚤
+                            <span>Inc.Tim.</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🦀" title="Caranguejo">
+                            🦀
+                            <span>Caranguejo</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="👮" title="Fiscalização" id="fiscalizacaoBtn" style="display: none;">
+                            👮
+                            <span>Fiscal.</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="👥" title="Reunião de Conselho">
+                            👥
+                            <span>Reunião</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🚨" title="Prazo">
+                            🚨
+                            <span>Prazo</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar">
+            <div class="weekdays">
+                <div class="weekday">Dom</div>
+                <div class="weekday">Seg</div>
+                <div class="weekday">Ter</div>
+                <div class="weekday">Qua</div>
+                <div class="weekday">Qui</div>
+                <div class="weekday">Sex</div>
+                <div class="weekday">Sáb</div>
+            </div>
+            <div class="days" id="calendarDays"></div>
+        </div>
+
+        <div class="garage-section" style="display: flex; gap: 40px; margin: 32px 0; align-items: flex-start;">
+            <div class="garage" style="background: #f5f5f5; border-radius: 16px; padding: 16px; min-width: 220px;">
+                <h3 style="text-align:center;">🚗 Garagem</h3>
+                <div class="garage-vehicles" id="garageVehicles" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                    <img src="img/hilux.png" alt="Hilux" class="garage-vehicle" data-vehicle="hilux" data-name="Hilux" style="width:144px;height:144px;cursor:pointer;" draggable="true">
+                    <img src="img/viatura.png" alt="Nova" class="garage-vehicle" data-vehicle="nova" data-name="Nova" style="width:144px;height:144px;cursor:pointer;" draggable="true">
+                    <img src="img/nissan.png" alt="Nissan" class="garage-vehicle" data-vehicle="nissan" data-name="Nissan" style="width:144px;height:144px;cursor:pointer;" draggable="true">
+                    <img src="img/bruta.png" alt="Bruta" class="garage-vehicle" data-vehicle="bruta" data-name="Bruta" style="width:144px;height:144px;cursor:pointer;" draggable="true">
+                    <img src="img/nin.png" alt="Nin" class="garage-vehicle" data-vehicle="nin" data-name="Nin" style="width:144px;height:144px;cursor:pointer;" draggable="true">
+                    <img src="img/fiesta.png" alt="Fiesta" class="garage-vehicle" data-vehicle="fiesta" data-name="Fiesta" style="width:144px;height:144px;cursor:pointer;" draggable="true">
+                </div>
+            </div>
+            <div class="garage" style="background: #e0f7fa; border-radius: 16px; padding: 16px; min-width: 220px;">
+                <h3 style="text-align:center;">🐬 Garagem Peixe Boi</h3>
+                <div class="garage-vehicles" id="garagePeixeBoi" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; min-height: 180px; min-width: 220px;">
+                    <!-- Nenhum veículo inicia na garagem Peixe Boi por padrão -->
+                </div>
+            </div>
+            <div class="workshop" style="background: #fffbe6; border-radius: 16px; padding: 0 16px 16px 16px; min-width: 220px; position:relative;">
+                <div style="width:100%;height:28px;background:linear-gradient(180deg,#ffe066 60%,#fffbe6 100%);border-radius:16px 16px 0 0;position:absolute;top:0;left:0;text-align:center;line-height:28px;font-weight:bold;letter-spacing:2px;">🔧 Oficina</div>
+                <div class="workshop-vehicles" id="workshopVehicles" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; min-height: 48px; margin-top:36px; padding-bottom:8px;">
+                    <!-- Veículos na oficina aparecerão aqui -->
+                </div>
+                <div style="width:100%;height:12px;background:repeating-linear-gradient(90deg,#ffe066,#ffe066 10px,#fffbe6 10px,#fffbe6 20px);border-radius:0 0 16px 16px;position:absolute;bottom:0;left:0;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar evento -->
+    <div class="event-modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="eventModalTitle">Adicionar Evento</h2>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label>Símbolo:</label>
+                    <div id="symbolPreviewContainer" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <!-- Preview da imagem/símbolo será inserido aqui -->
+                    </div>
+                    <input type="text" id="eventSymbol" readonly style="background: #f8f9fa; color: #666; display: none;">
+                </div>
+                <div class="form-group" id="groupStart">
+                    <label>Data/Hora Início:</label>
+                    <input type="datetime-local" id="eventStartDateTime">
+                </div>
+                <div class="form-group" id="groupEnd">
+                    <label>Data/Hora Fim:</label>
+                    <input type="datetime-local" id="eventEndDateTime">
+                </div>
+                <div class="form-group" id="groupResponsavel">
+                    <label>Responsável:</label>
+                    <input type="text" id="eventResponsible" placeholder="Digite o nome do responsável">
+                </div>
+                <div class="form-group" id="groupDemanda">
+                    <label>Demanda:</label>
+                    <textarea id="eventDemand" placeholder="Descreva a demanda ou atividade"></textarea>
+                </div>
+                <div class="form-group" id="groupMotorista" style="display:none;">
+                    <label>Motorista:</label>
+                    <input type="text" id="eventMotorista" placeholder="Nome do motorista">
+                </div>
+                <div class="form-group" id="groupEquipe" style="display:none;">
+                    <label>Equipe:</label>
+                    <input type="text" id="eventEquipe" placeholder="Equipe do veículo">
+                </div>
+                <div class="form-group" id="groupOcorrencia" style="display:none;">
+                    <label>Ocorrência:</label>
+                    <textarea id="eventOcorrencia" placeholder="Descreva a ocorrência"></textarea>
+                </div>
+                <div class="form-group" id="groupPrevisao" style="display:none;">
+                    <label>Previsão de Conserto:</label>
+                    <input type="date" id="eventPrevisao">
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="cancelBtn" type="button">Cancelar</button>
+                    <button class="btn btn-primary" id="saveBtn" type="button">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalhes -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-content">
+            <div class="modal-header">
+                <h2>Detalhes do Evento</h2>
+                <button class="close-btn" id="closeDetailModal">×</button>
+            </div>
+            <div id="detailContent"></div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="editBtn" style="display: none;">Editar</button>
+                <button class="btn btn-danger" id="deleteBtn">Excluir</button>
+                <button class="btn btn-secondary" id="closeDetailBtn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+        <script>
+        // Lógica de seleção igual aos símbolos
+        const garageVehiclesDiv = document.getElementById('garageVehicles');
+        const garagePeixeBoiDiv = document.getElementById('garagePeixeBoi');
+        // --- Persistência garagem Peixe Boi ---
+        let peixeBoiData = {};
+        function renderPeixeBoiVehicles() {
+            if (!garagePeixeBoiDiv) return;
+            garagePeixeBoiDiv.innerHTML = '';
+            const vehicleImgs = {
+                'hilux': 'img/hilux.png',
+                'nova': 'img/viatura.png',
+                'nissan': 'img/nissan.png',
+                'bruta': 'img/bruta.png',
+                'nin': 'img/nin.png',
+                'fiesta': 'img/fiesta.png'
+            };
+            if (!peixeBoiData) return;
+            Object.values(peixeBoiData).forEach(data => {
+                const vehicleName = data.vehicle;
+                if (vehicleImgs[vehicleName]) {
+                    const img = document.createElement('img');
+                    img.src = vehicleImgs[vehicleName];
+                    img.alt = vehicleName;
+                    img.className = 'garage-vehicle';
+                    img.dataset.vehicle = vehicleName;
+                    img.style.width = '144px';
+                    img.style.height = '144px';
+                    img.style.cursor = 'pointer';
+                    garagePeixeBoiDiv.appendChild(img);
+                }
+            });
+            addDragListenersToGarage(garagePeixeBoiDiv);
+        }
+        const workshopVehiclesDiv = document.getElementById('workshopVehicles');
+
+        // Drag & Drop para veículos
+        function addDragListenersToGarage(garageDiv) {
+            garageDiv.querySelectorAll('.garage-vehicle').forEach(img => {
+                // Desktop: Drag & Drop
+                img.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('vehicle', img.dataset.vehicle);
+                    window.selectedVehicleImg = img;
+                    window.selectedVehicle = img.dataset.vehicle;
+                    setTimeout(() => { img.style.display = 'none'; }, 0);
+                });
+                img.addEventListener('dragend', (e) => {
+                    img.style.display = '';
+                });
+
+                // Mobile: Touch events para simular drag
+                let touchStartX = 0, touchStartY = 0;
+                img.addEventListener('touchstart', (e) => {
+                    const touch = e.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+                    window.selectedVehicleImg = img;
+                    window.selectedVehicle = img.dataset.vehicle;
+                });
+                img.addEventListener('touchend', (e) => {
+                    const touch = e.changedTouches[0];
+                    const dx = touch.clientX - touchStartX;
+                    const dy = touch.clientY - touchStartY;
+                    // Se o usuário "arrastou" para a direita (oficina) ou esquerda (garagem peixe boi)
+                    const threshold = 50; // px
+                    const workshopDiv = document.getElementById('workshopVehicles');
+                    const garagePeixeBoiDiv = document.getElementById('garagePeixeBoi');
+                    if (dx > threshold) {
+                        // Arrastou para a direita: tentar oficina
+                        if (window.auth && window.auth.currentUser) {
+                            selectVehicle(img);
+                            showWorkshopForm();
+                        } else {
+                            alert('Faça login para mover veículos para a oficina.');
+                        }
+                    } else if (dx < -threshold) {
+                        // Arrastou para a esquerda: garagem peixe boi
+                        if (garagePeixeBoiDiv) {
+                            if (img.parentElement) img.parentElement.removeChild(img);
+                            garagePeixeBoiDiv.appendChild(img);
+                            // Persistência Peixe Boi
+                            if (database && img.dataset.vehicle) {
+                                const pbRef = ref(database, 'peixeBoi/' + img.dataset.vehicle);
+                                set(pbRef, { vehicle: img.dataset.vehicle });
+                            }
+                            setTimeout(() => {
+                                addDragListenersToGarage(garagePeixeBoiDiv);
+                            }, 10);
+                        }
+                    }
+                });
+            });
+        }
+        addDragListenersToGarage(garageVehiclesDiv);
+        addDragListenersToGarage(garagePeixeBoiDiv);
+
+        // Permitir soltar veículos entre as garagens
+        [garageVehiclesDiv, garagePeixeBoiDiv].forEach(garageDiv => {
+            garageDiv.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            garageDiv.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const vehicle = e.dataTransfer.getData('vehicle');
+                if (vehicle && window.selectedVehicleImg) {
+                    // Remove da garagem de origem
+                    if (window.selectedVehicleImg.parentElement) {
+                        window.selectedVehicleImg.parentElement.removeChild(window.selectedVehicleImg);
+                    }
+                    // Adiciona na garagem de destino
+                    garageDiv.appendChild(window.selectedVehicleImg);
+                    window.selectedVehicleImg.style.outline = '';
+                    // Persistência garagem Peixe Boi
+                    if (garageDiv === garagePeixeBoiDiv && database) {
+                        // Adiciona no Firebase
+                        const pbRef = ref(database, 'peixeBoi/' + window.selectedVehicleImg.dataset.vehicle);
+                        set(pbRef, { vehicle: window.selectedVehicleImg.dataset.vehicle });
+                    } else if (garageDiv === garageVehiclesDiv && database) {
+                        // Remove do Firebase Peixe Boi se estiver voltando para garagem principal
+                        const pbRef = ref(database, 'peixeBoi/' + window.selectedVehicleImg.dataset.vehicle);
+                        remove(pbRef);
+                    }
+                    window.selectedVehicle = null;
+                    window.selectedVehicleImg = null;
+                }
+                setTimeout(() => {
+                    addDragListenersToGarage(garageVehiclesDiv);
+                    addDragListenersToGarage(garagePeixeBoiDiv);
+                }, 10);
+            });
+
+            // Mobile: permitir "tap" para mover para garagem principal
+            garageDiv.addEventListener('touchend', (e) => {
+                const img = e.target.closest('.garage-vehicle');
+                if (img && img.parentElement !== garageVehiclesDiv) {
+                    if (img.parentElement) img.parentElement.removeChild(img);
+                    garageVehiclesDiv.appendChild(img);
+                    // Remove do Firebase Peixe Boi se estava lá
+                    if (database && img.dataset.vehicle) {
+                        const pbRef = ref(database, 'peixeBoi/' + img.dataset.vehicle);
+                        remove(pbRef);
+                    }
+                    setTimeout(() => {
+                        addDragListenersToGarage(garageVehiclesDiv);
+                    }, 10);
+                }
+            });
+        });
+        workshopVehiclesDiv.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        workshopVehiclesDiv.addEventListener('drop', (e) => {
+            e.preventDefault();
+            // Permitir arrastar de qualquer garagem para oficina
+            if (!window.auth || !window.auth.currentUser) {
+                alert('Faça login para mover veículos para a oficina.');
+                return;
+            }
+            const vehicle = e.dataTransfer.getData('vehicle');
+            if (vehicle && window.selectedVehicleImg) {
+                // Apenas seleciona o veículo e abre o formulário, sem remover da garagem nem adicionar na oficina ainda
+                selectVehicle(window.selectedVehicleImg);
+                showWorkshopForm();
+            }
+        });
+        // eventModal já declarado anteriormente
+        const eventModalTitle = document.getElementById('eventModalTitle');
+        const eventForm = document.getElementById('eventForm');
+        const groupMotorista = document.getElementById('groupMotorista');
+        const groupEquipe = document.getElementById('groupEquipe');
+        const groupOcorrencia = document.getElementById('groupOcorrencia');
+        const groupPrevisao = document.getElementById('groupPrevisao');
+        const groupStart = document.getElementById('groupStart');
+        const groupEnd = document.getElementById('groupEnd');
+        let selectedVehicle = null;
+        let selectedVehicleImg = null;
+        let actionType = null;
+
+        // Função para limpar seleção visual
+        function clearVehicleSelection() {
+            document.querySelectorAll('.garage-vehicle').forEach(i => i.style.outline = '');
+        }
+        // Selecionar veículo
+        function selectVehicle(img) {
+            clearVehicleSelection();
+            img.style.outline = '3px solid #667eea';
+            selectedVehicle = img.dataset.vehicle;
+            window.selectedVehicle = selectedVehicle; // Garantir acesso global
+            selectedVehicleImg = img;
+            window.selectedVehicleImg = selectedVehicleImg; // Garantir acesso global
+            // Se um veículo for selecionado, desmarque o símbolo
+            selectedSymbol = null;
+            document.querySelectorAll('.symbol-btn').forEach(b => b.classList.remove('active'));
+            hamburgerBtn.classList.add('has-selection');
+        }
+        document.querySelectorAll('.garage-vehicle').forEach(img => {
+            img.addEventListener('click', () => {
+                selectVehicle(img);
+            });
+            // Tooltip ao passar o mouse mostra nome do veículo
+            img.addEventListener('mouseover', () => {
+                img.title = img.getAttribute('data-name') || img.dataset.vehicle;
+            });
+        });
+
+        // Listener de clique no dia removido (usando listener individual em createDayElement)
+                // Permitir tirar veículo da oficina apenas logado
+                workshopVehiclesDiv.addEventListener('click', (e) => {
+                    const img = e.target.closest('.garage-vehicle');
+                    if (img) {
+                        if (!window.auth || !window.auth.currentUser) {
+                            alert('Faça login para retirar veículos da oficina.');
+                            return;
+                        }
+                        // Sempre remove do Firebase, garantindo persistência
+                        if (img.dataset.id && database) {
+                            if (confirm('Deseja retirar este veículo da oficina?')) {
+                                const workshopRef = ref(database, 'workshop/' + img.dataset.id);
+                                remove(workshopRef);
+                                // Visualmente, devolve para a garagem principal imediatamente
+                                setTimeout(() => {
+                                    if (!document.querySelector(`#garageVehicles .garage-vehicle[data-vehicle="${img.dataset.vehicle}"]`)) {
+                                        const novoImg = img.cloneNode(true);
+                                        novoImg.removeAttribute('data-id');
+                                        garageVehiclesDiv.appendChild(novoImg);
+                                        addDragListenersToGarage(garageVehiclesDiv);
+                                    }
+                                    img.remove();
+                                }, 100);
+                            }
+                        }
+                    }
+                });
+
+                // Mostrar tooltip com resumo dos dados ao passar o mouse na oficina
+                workshopVehiclesDiv.addEventListener('mouseover', (e) => {
+                    const img = e.target.closest('.garage-vehicle');
+                    if (img) {
+                        // Buscar dados do veículo na oficina (mock: pode ser melhorado para buscar dados reais)
+                        let resumo = img.getAttribute('data-tooltip');
+                        if (!resumo) {
+                            resumo = 'Responsável: ---\nOcorrência: ---\nPrevisão: ---';
+                        }
+                        img.title = resumo;
+                    }
+                });
+        // Clicar na oficina (toldo)
+        workshopVehiclesDiv.addEventListener('dblclick', (e) => {
+            if (selectedVehicle) {
+                showWorkshopForm();
+            }
+        });
+
+        // Mostrar formulário para oficina
+        function showWorkshopForm() {
+            actionType = 'oficina';
+            eventModal.classList.add('active');
+            eventModal.style.display = '';
+            eventModalTitle.textContent = 'Enviar Veículo para Oficina';
+            clearVehicleSelection();
+            // Esconde todos os grupos
+            [groupMotorista, groupEquipe, groupStart, groupEnd, groupResponsavel, groupDemanda, groupOcorrencia, groupPrevisao].forEach(g => { if (g) g.style.display = 'none'; });
+            groupOcorrencia.style.display = '';
+            groupPrevisao.style.display = '';
+
+            // Mostrar preview do símbolo do carro selecionado
+            const previewContainer = document.getElementById('symbolPreviewContainer');
+            previewContainer.innerHTML = '';
+            const vehicleImgs = {
+                'hilux': 'img/hilux.png',
+                'nova': 'img/viatura.png',
+                'nissan': 'img/nissan.png',
+                'bruta': 'img/bruta.png',
+                'nin': 'img/nin.png',
+                'fiesta': 'img/fiesta.png'
+            };
+            let symbolName = selectedVehicle || window.selectedVehicle || '';
+            if (symbolName && vehicleImgs[symbolName]) {
+                const img = document.createElement('img');
+                img.src = vehicleImgs[symbolName];
+                img.alt = symbolName;
+                img.style.width = '45px';
+                img.style.height = '45px';
+                previewContainer.appendChild(img);
+            } else if (symbolName) {
+                // Caso seja símbolo emoji
+                const span = document.createElement('span');
+                span.textContent = symbolName;
+                span.style.fontSize = '2em';
+                previewContainer.appendChild(span);
+            }
+            // Não sobrescrever o onclick do botão Salvar. O addEventListener('click', saveEvent) já está configurado corretamente.
+        }
+
+        // Mostrar formulário para calendário
+        function showCalendarForm(dateKey) {
+            actionType = 'calendario';
+            eventModal.classList.add('active');
+            eventModal.style.display = '';
+            eventModalTitle.textContent = 'Adicionar Evento';
+            clearVehicleSelection();
+            
+            // Ocultar todos os grupos primeiro
+            [groupMotorista, groupEquipe, groupOcorrencia, groupPrevisao, groupStart, groupEnd, groupResponsavel, groupDemanda].forEach(g => { 
+                if (g) g.style.display = 'none'; 
+            });
+            // Exibir apenas os necessários
+            if (groupStart) groupStart.style.display = '';
+            if (groupEnd) groupEnd.style.display = '';
+            if (groupResponsavel) groupResponsavel.style.display = '';
+            if (groupDemanda) groupDemanda.style.display = '';
+
+            // Preencher campo símbolo automaticamente e mostrar preview
+            const symbolName = selectedSymbol || window.selectedSymbol || selectedVehicle || window.selectedVehicle || '';
+            document.getElementById('eventSymbol').value = symbolName;
+
+            const previewContainer = document.getElementById('symbolPreviewContainer');
+            previewContainer.innerHTML = ''; // Limpar anterior
+
+            // Mapeamento de imagens para preview (deve coincidir com o renderCalendar)
+            const vehicleImgs = {
+                'hilux': 'img/hilux.png',
+                'nova': 'img/viatura.png',
+                'nissan': 'img/nissan.png',
+                'bruta': 'img/bruta.png',
+                'nin': 'img/nin.png',
+                'fiesta': 'img/fiesta.png'
+            };
+
+            const normalizedSymbolName = symbolName.toLowerCase();
+
+            if (vehicleImgs[normalizedSymbolName]) {
+                const img = document.createElement('img');
+                img.src = vehicleImgs[normalizedSymbolName];
+                img.style.width = '64px';
+                img.style.height = '64px';
+                img.style.objectFit = 'contain';
+                previewContainer.appendChild(img);
+                
+                const text = document.createElement('span');
+                text.textContent = symbolName.charAt(0).toUpperCase() + symbolName.slice(1);
+                text.style.fontWeight = 'bold';
+                previewContainer.appendChild(text);
+            } else {
+                // É um símbolo (emoji/texto)
+                const span = document.createElement('span');
+                span.textContent = symbolName;
+                span.style.fontSize = '2em';
+                previewContainer.appendChild(span);
+            }
+
+            // Preencher datas automaticamente
+            if (dateKey) {
+                currentDateKey = dateKey;
+                const [year, month, day] = dateKey.split('-');
+                const startDateTime = `${year}-${month}-${day}T08:00`;
+                const endDateTime = `${year}-${month}-${day}T23:59`;
+                document.getElementById('eventStartDateTime').value = startDateTime;
+                document.getElementById('eventEndDateTime').value = endDateTime;
+            }
+
+            // Limpar campos de responsável e demanda
+            document.getElementById('eventResponsible').value = '';
+            document.getElementById('eventDemand').value = '';
+        }
+
+        </script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // ===== SISTEMA DE ATUALIZAÇÃO AUTOMÁTICA =====
+        const APP_VERSION = '2.5'; // Aumente este número quando atualizar o app
+        
+        function checkVersion() {
+            const savedVersion = localStorage.getItem('appVersion');
+            const metaVersion = document.querySelector('meta[name="app-version"]')?.content || APP_VERSION;
+            if (savedVersion && savedVersion !== metaVersion) {
+                console.log(`Nova versão detectada: ${metaVersion} (anterior: ${savedVersion})`);
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        names.forEach(name => caches.delete(name));
+                    });
+                }
+                localStorage.setItem('appVersion', metaVersion);
+                // Removido window.location.reload(true) para evitar recarregamento forçado
+                // Usuário pode recarregar manualmente se notar problemas
+            } else if (!savedVersion) {
+                localStorage.setItem('appVersion', metaVersion);
+            }
+        }
+        
+        // Verificar versão ao carregar
+        checkVersion();
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyArkkOn99T1YBfnX87mp-anY8p8deWQlYQ",
+            authDomain: "calendario2026-9b6b8.firebaseapp.com",
+            databaseURL: "https://calendario2026-9b6b8-default-rtdb.firebaseio.com",
+            projectId: "calendario2026-9b6b8",
+            storageBucket: "calendario2026-9b6b8.firebasestorage.app",
+            messagingSenderId: "19640507526",
+            appId: "1:19640507526:web:901ded870ff53f119e8507"
+        };
+
+        // Inicializar Firebase
+        let app, database, auth;
+        try {
+            // Evita múltiplas inicializações do Firebase
+            if (window.firebaseAppInstance) {
+                app = window.firebaseAppInstance;
+            } else {
+                app = initializeApp(firebaseConfig);
+                window.firebaseAppInstance = app;
+            }
+            database = getDatabase(app);
+            auth = getAuth(app);
+            window.auth = auth; // Torna o auth global para checagem de login
+        } catch (error) {
+            console.error('Erro ao conectar Firebase:', error);
+        }
+
+        // ===== AUTENTICAÇÃO =====
+        const loginScreen = document.getElementById('loginScreen');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const mainApp = document.getElementById('mainApp');
+        const container = document.querySelector('.container');
+
+        // Mostrar botão de login
+        loginBtn.addEventListener('click', () => {
+            loginScreen.classList.remove('hidden');
+        });
+
+        // Login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                loginError.classList.remove('active');
+            } catch (error) {
+                console.error('Erro no login:', error);
+                loginError.classList.add('active');
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error('Erro no logout:', error);
+            }
+        });
+
+        // Monitorar estado de autenticação
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuário logado - MODO EDIÇÃO
+                loginScreen.classList.add('hidden');
+                mainApp.style.display = 'block';
+                container.classList.remove('read-only');
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                
+                // Mostrar botão de fiscalização
+                const fiscalizacaoBtn = document.getElementById('fiscalizacaoBtn');
+                if (fiscalizacaoBtn) fiscalizacaoBtn.style.display = 'inline-flex';
+                
+                updateStatus('connected', `✓ Conectado como ${user.email.split('@')[0]}`);
+                
+                // Carregar dados do calendário
+                if (database) {
+                    const calendarRef = ref(database, 'calendar');
+                    onValue(calendarRef, (snapshot) => {
+                        calendarData = snapshot.val() || {};
+                        renderCalendar();
+                    });
+
+                    // Carregar dados da oficina
+                    const workshopRef = ref(database, 'workshop');
+                    onValue(workshopRef, (snapshot) => {
+                        workshopData = snapshot.val() || {};
+                        renderWorkshopVehicles();
+                    });
+
+                    // Carregar dados da garagem Peixe Boi
+                    const peixeBoiRef = ref(database, 'peixeBoi');
+                    onValue(peixeBoiRef, (snapshot) => {
+                        peixeBoiData = snapshot.val() || {};
+                        renderPeixeBoiVehicles();
+                    });
+                }
+                
+                renderCalendar();
+            } else {
+                // Usuário não logado - MODO LEITURA
+                loginScreen.classList.add('hidden');
+                mainApp.style.display = 'block';
+                container.classList.add('read-only');
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                
+                // Ocultar botão de fiscalização
+                const fiscalizacaoBtn = document.getElementById('fiscalizacaoBtn');
+                if (fiscalizacaoBtn) fiscalizacaoBtn.style.display = 'none';
+                
+                updateStatus('info', '👁️ Modo visualização - Faça login para editar');
+                
+                // Carregar dados do calendário em modo leitura
+                if (database) {
+                    const calendarRef = ref(database, 'calendar');
+                    onValue(calendarRef, (snapshot) => {
+                        calendarData = snapshot.val() || {};
+                        renderCalendar();
+                    });
+
+                    // Carregar dados da oficina
+                    const workshopRef = ref(database, 'workshop');
+                    onValue(workshopRef, (snapshot) => {
+                        workshopData = snapshot.val() || {};
+                        renderWorkshopVehicles();
+                    });
+
+                    // Carregar dados da garagem Peixe Boi
+                    const peixeBoiRef = ref(database, 'peixeBoi');
+                    onValue(peixeBoiRef, (snapshot) => {
+                        peixeBoiData = snapshot.val() || {};
+                        renderPeixeBoiVehicles();
+                    });
+                }
+                
+                renderCalendar();
+            }
+        });
+
+        // Estado da aplicação
+        let calendarData = {};
+        let workshopData = {};
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let selectedSymbol = null;
+        let currentDateKey = null;
+        let currentEventData = null;
+
+        // Meses em português
+        const monthNames = [
+            'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        ];
+
+        // Calcular fase da lua
+        function getMoonPhase(year, month, day) {
+            // Fases da lua para 2026 baseadas no calendário lunar oficial
+            const moonPhases2026 = {
+                0: { // Janeiro
+                    3: '🌕', 10: '🌗', 18: '🌑', 26: '🌓'
+                },
+                1: { // Fevereiro
+                    1: '🌕', 8: '🌗', 16: '🌑', 25: '🌓'
+                },
+                2: { // Março
+                    3: '🌕', 10: '🌗', 17: '🌑', 25: '🌓'
+                },
+                3: { // Abril
+                    1: '🌕', 9: '🌗', 16: '🌑', 24: '🌓'
+                },
+                4: { // Maio
+                    1: '🌕', 9: '🌗', 16: '🌑', 23: '🌓', 30: '🌕'
+                },
+                5: { // Junho
+                    8: '🌗', 15: '🌑', 22: '🌓', 29: '🌕'
+                },
+                6: { // Julho
+                    7: '🌗', 14: '🌑', 21: '🌓', 29: '🌕'
+                },
+                7: { // Agosto
+                    6: '🌗', 12: '🌑', 20: '🌓', 27: '🌕'
+                },
+                8: { // Setembro
+                    4: '🌗', 11: '🌑', 19: '🌓', 27: '🌕'
+                },
+                9: { // Outubro
+                    4: '🌗', 11: '🌑', 18: '🌓', 25: '🌕'
+                },
+                10: { // Novembro
+                    2: '🌗', 9: '🌑', 17: '🌓', 24: '🌕'
+                },
+                11: { // Dezembro
+                    1: '🌗', 9: '🌑', 16: '🌓', 24: '🌕', 31: '🌗'
+                }
+            };
+            
+            // Verificar se o ano é 2026 e se existe fase da lua para este dia
+            if (year === 2026 && moonPhases2026[month] && moonPhases2026[month][day]) {
+                return moonPhases2026[month][day];
+            }
+            
+            return ''; // Sem fase da lua para outros anos ou dias
+        }
+
+        // Controle do menu sanduíche
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const symbolMenu = document.getElementById('symbolMenu');
+        
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            symbolMenu.classList.toggle('active');
+        });
+
+        // Fechar menu ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!symbolMenu.contains(e.target) && e.target !== hamburgerBtn) {
+                symbolMenu.classList.remove('active');
+            }
+        });
+
+        // Controle dos modais
+        const eventModal = document.getElementById('eventModal');
+        const detailModal = document.getElementById('detailModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const closeDetailModal = document.getElementById('closeDetailModal');
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+
+        closeModal.addEventListener('click', () => {
+            eventModal.classList.remove('active');
+            clearForm();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            eventModal.classList.remove('active');
+            clearForm();
+        });
+
+        closeDetailModal.addEventListener('click', () => {
+            detailModal.classList.remove('active');
+        });
+
+        closeDetailBtn.addEventListener('click', () => {
+            detailModal.classList.remove('active');
+        });
+
+        saveBtn.addEventListener('click', saveEvent);
+        editBtn.addEventListener('click', editEvent);
+        deleteBtn.addEventListener('click', deleteEvent);
+
+        function clearForm() {
+            document.getElementById('eventStartDateTime').value = '';
+            document.getElementById('eventEndDateTime').value = '';
+            document.getElementById('eventResponsible').value = '';
+            document.getElementById('eventDemand').value = '';
+            currentDateKey = null;
+        }
+
+        function formatDate(dateKey) {
+            const [year, month, day] = dateKey.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // Atualizar status
+        function updateStatus(type, message) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${type}`;
+            statusEl.textContent = message;
+        }
+
+        // Renderizar calendário
+        function renderCalendar() {
+            const calendarDays = document.getElementById('calendarDays');
+            const monthYear = document.getElementById('monthYear');
+            
+            monthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            calendarDays.innerHTML = '';
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+
+            // Dias do mês anterior
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const dayEl = createDayElement(day, true);
+                calendarDays.appendChild(dayEl);
+            }
+
+            // Dias do mês atual
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = isCurrentMonth && day === today.getDate();
+                const dayEl = createDayElement(day, false, isToday);
+                calendarDays.appendChild(dayEl);
+            }
+
+            // Dias do próximo mês
+            const totalCells = calendarDays.children.length;
+            const remainingCells = 42 - totalCells; // 6 semanas x 7 dias
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayEl = createDayElement(day, true);
+                calendarDays.appendChild(dayEl);
+            }
+        }
+
+        // Criar elemento de dia
+        function createDayElement(day, isOtherMonth = false, isToday = false) {
+            const dayEl = document.createElement('div');
+            dayEl.className = 'day';
+            if (isOtherMonth) dayEl.classList.add('other-month');
+            if (isToday) dayEl.classList.add('today');
+
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+            dayNumber.textContent = day;
+
+            const daySymbol = document.createElement('div');
+            daySymbol.className = 'day-symbol';
+
+            // Adicionar fase da lua
+            const moonPhase = document.createElement('div');
+            moonPhase.className = 'moon-phase';
+            if (!isOtherMonth) {
+                const moonEmoji = getMoonPhase(currentYear, currentMonth, day);
+                moonPhase.textContent = moonEmoji;
+            }
+
+            if (!isOtherMonth) {
+                const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                dayEl.dataset.datekey = dateKey; // Adicionar data-datekey para facilitar acesso
+                
+                if (calendarData[dateKey]) {
+                    // Suporta tanto array quanto objeto único (retrocompatibilidade)
+                    let events = Array.isArray(calendarData[dateKey]) ? calendarData[dateKey] : [calendarData[dateKey]];
+                    
+                    // Filtrar fiscalização se usuário não estiver logado
+                    if (!auth.currentUser) {
+                        events = events.filter(evt => evt.symbol !== '👮');
+                    }
+                    
+                    // Agrupar eventos por horário
+                    const eventsByTime = {};
+                    events.forEach((eventData, index) => {
+                        // Determinar horário do evento
+                        let timeKey = '';
+                        if (eventData.isPeriod) {
+                            const startDate = new Date(eventData.startDateTime);
+                            const endDate = new Date(eventData.endDateTime);
+                            const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+                            const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+                            
+                            // Calcular número de dias do período
+                            const diffTime = Math.abs(endDate - startDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                            
+                            // Mostrar horário apenas se for início ou fim do período
+                            if (eventData.periodPosition === 'start') {
+                                timeKey = startTime;
+                            } else if (eventData.periodPosition === 'end') {
+                                timeKey = endTime;
+                            } else {
+                                timeKey = ''; // Dias intermediários sem horário
+                            }
+                            
+                            // Adicionar classe para pontilhados apenas se período > 1 dia
+                            eventData.showPeriodLine = diffDays > 1;
+                        } else {
+                            timeKey = eventData.time || '';
+                        }
+                        
+                        if (!eventsByTime[timeKey]) {
+                            eventsByTime[timeKey] = [];
+                        }
+                        eventsByTime[timeKey].push({ eventData, index });
+                    });
+                    
+                    // Renderizar eventos agrupados por horário
+                    Object.entries(eventsByTime).forEach(([timeKey, eventsGroup]) => {
+                        // Container para cada grupo de horário
+                        const timeGroup = document.createElement('div');
+                        timeGroup.style.display = 'flex';
+                        timeGroup.style.flexDirection = 'column';
+                        timeGroup.style.alignItems = 'center';
+                        timeGroup.style.gap = '2px';
+                        timeGroup.style.marginBottom = '3px';
+
+                        // Container de símbolos
+                        const symbolsContainer = document.createElement('div');
+                        symbolsContainer.style.display = 'flex';
+                        symbolsContainer.style.gap = '3px';
+                        symbolsContainer.style.flexWrap = 'wrap';
+                        symbolsContainer.style.justifyContent = 'center';
+
+                        eventsGroup.forEach(({ eventData, index }) => {
+                            let symbolEl;
+                            // Se for símbolo de veículo, mostrar imagem
+                            const vehicleImgs = {
+                                'hilux': 'img/hilux.png',
+                                'nova': 'img/viatura.png',
+                                'nissan': 'img/nissan.png',
+                                'bruta': 'img/bruta.png',
+                                'nin': 'img/nin.png',
+                                'fiesta': 'img/fiesta.png'
+                            };
+                            const normalizedSymbol = eventData.symbol ? eventData.symbol.toLowerCase() : '';
+                            if (vehicleImgs[normalizedSymbol]) {
+                                symbolEl = document.createElement('img');
+                                symbolEl.src = vehicleImgs[normalizedSymbol];
+                                symbolEl.alt = eventData.symbol;
+                                symbolEl.style.width = '56px';
+                                symbolEl.style.height = '56px';
+                                symbolEl.className = 'symbol-item';
+                            } else {
+                                symbolEl = document.createElement('span');
+                                symbolEl.className = 'symbol-item';
+                                symbolEl.textContent = eventData.symbol || '';
+                            }
+                            // Adicionar pontilhados APENAS para períodos com MAIS DE 1 DIA
+                            if (eventData.isPeriod && eventData.totalDays > 1 && eventData.periodPosition) {
+                                symbolEl.classList.add(`period-${eventData.periodPosition}`);
+                            }
+                            // Tooltip com informações para carros na oficina
+                            if (eventData.symbol && vehicleImgs[normalizedSymbol] && eventData.isPeriod && eventData.demand && eventData.startDateTime && eventData.endDateTime) {
+                                // Exibe ocorrência e previsão (sem responsável)
+                                const dataPrevisao = (() => {
+                                    const end = new Date(eventData.endDateTime);
+                                    return `${String(end.getDate()).padStart(2, '0')}/${String(end.getMonth() + 1).padStart(2, '0')}/${end.getFullYear()}`;
+                                })();
+                                symbolEl.title = `Ocorrência: ${eventData.demand || '-'}\nPrevisão: ${dataPrevisao}`;
+                            } else if (eventData.isPeriod) {
+                                symbolEl.title = `Período de ${eventData.totalDays} dia(s)`;
+                            } else {
+                                symbolEl.title = `${eventData.time || ''}`;
+                            }
+                            // Clique no símbolo mostra detalhes
+                            symbolEl.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                showEventDetails(dateKey, eventData, index);
+                            });
+                            symbolsContainer.appendChild(symbolEl);
+                        });
+
+                        timeGroup.appendChild(symbolsContainer);
+
+                        // Mostrar horário abaixo dos símbolos
+                        if (timeKey) {
+                            const timeSpan = document.createElement('div');
+                            timeSpan.style.fontSize = '0.7em';
+                            timeSpan.style.color = '#666';
+                            timeSpan.textContent = timeKey;
+                            timeGroup.appendChild(timeSpan);
+                        }
+
+                        daySymbol.appendChild(timeGroup);
+                    });
+                }
+
+                // Clique no dia abre modal para adicionar
+                dayEl.addEventListener('click', () => handleDayClick(dateKey));
+            }
+
+            dayEl.appendChild(dayNumber);
+            dayEl.appendChild(moonPhase);
+            dayEl.appendChild(daySymbol);
+
+            return dayEl;
+        }
+
+        // Renderizar veículos na oficina
+        function renderWorkshopVehicles() {
+            const workshopVehiclesDiv = document.getElementById('workshopVehicles');
+            workshopVehiclesDiv.innerHTML = ''; // Limpar atual
+
+            // Resetar visibilidade de todos os carros na garagem
+            document.querySelectorAll('.garage-vehicle').forEach(img => {
+                img.style.display = '';
+            });
+
+            if (!workshopData) return;
+
+            const vehicleImgs = {
+                'hilux': 'img/hilux.png',
+                'nova': 'img/viatura.png',
+                'nissan': 'img/nissan.png',
+                'bruta': 'img/bruta.png',
+                'nin': 'img/nin.png',
+                'fiesta': 'img/fiesta.png'
+            };
+
+            Object.entries(workshopData).forEach(([key, data]) => {
+                const vehicleName = data.symbol;
+                if (vehicleImgs[vehicleName]) {
+                    const img = document.createElement('img');
+                    img.src = vehicleImgs[vehicleName];
+                    img.alt = vehicleName;
+                    img.className = 'garage-vehicle';
+                    img.dataset.vehicle = vehicleName;
+                    img.dataset.id = key; // ID do Firebase
+                    img.dataset.tooltip = `Ocorrência: ${data.demand}\nPrevisão: ${data.previsao}`;
+                    img.title = img.dataset.tooltip;
+                    img.style.width = '144px';
+                    img.style.height = '144px';
+                    img.style.cursor = 'pointer';
+                    
+                    workshopVehiclesDiv.appendChild(img);
+
+                    // Esconder da garagem original
+                    const originalImg = document.querySelector(`#garageVehicles .garage-vehicle[data-vehicle="${vehicleName}"]`);
+                    if (originalImg) {
+                        originalImg.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Lidar com clique no dia
+        function handleDayClick(dateKey) {
+            // Verificar se usuário está logado
+            if (!auth.currentUser) {
+                alert('⚠️ Você precisa fazer login para adicionar eventos.\n\nClique no botão "🔐 Entrar para Editar" no canto superior direito.');
+                return;
+            }
+
+            // Se um veículo ou símbolo estiver selecionado, abrir o modal de preenchimento
+            // Usar window.selectedVehicle para garantir acesso entre escopos (global vs module)
+            if (selectedVehicle || window.selectedVehicle || selectedSymbol || window.selectedSymbol) {
+                showCalendarForm(dateKey);
+            } else {
+                alert('Selecione um símbolo ou veículo primeiro.');
+            }
+        }
+
+        // Salvar evento
+        function saveEvent() {
+            let startDateTime, endDateTime, responsible, demand;
+
+            // Validação diferenciada para oficina
+            if (actionType === 'oficina') {
+                const ocorrencia = document.getElementById('eventOcorrencia').value;
+                const previsao = document.getElementById('eventPrevisao').value;
+                if (!ocorrencia || !previsao) {
+                    alert('Preencha todos os campos da oficina!');
+                    return;
+                }
+                
+                // Salvar na oficina (Firebase)
+                const symbolName = selectedSymbol || selectedVehicle || window.selectedSymbol || window.selectedVehicle || '';
+                const workshopEvent = {
+                    id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+                    symbol: symbolName,
+                    demand: ocorrencia,
+                    previsao: previsao,
+                    createdAt: new Date().toISOString()
+                };
+                
+                if (database) {
+                    const workshopRef = ref(database, 'workshop/' + workshopEvent.id);
+                    set(workshopRef, workshopEvent);
+                }
+                
+                eventModal.classList.remove('active');
+                clearForm();
+                return;
+            } else {
+                startDateTime = document.getElementById('eventStartDateTime').value;
+                endDateTime = document.getElementById('eventEndDateTime').value;
+                responsible = document.getElementById('eventResponsible').value;
+                demand = document.getElementById('eventDemand').value;
+
+                if (!startDateTime || !endDateTime || !responsible || !demand) {
+                    alert('Preencha todos os campos!');
+                    return;
+                }
+                // Validar que fim é depois do início
+                if (new Date(endDateTime) < new Date(startDateTime)) {
+                    alert('A data/hora de fim deve ser posterior à de início!');
+                    return;
+                }
+            }
+
+            // Se estiver editando, remover o evento antigo primeiro
+            if (currentEventData && currentEventData.isEditing) {
+                // Ao editar, sempre remove só o evento do dia, nunca o período inteiro
+                deleteSingleDay(currentEventData.dateKey, currentEventData.eventIndex);
+                currentEventData.isEditing = false;
+            }
+
+            const symbolName = document.getElementById('eventSymbol').value || selectedSymbol || selectedVehicle || window.selectedSymbol || window.selectedVehicle || '';
+            const eventData = {
+                id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+                symbol: symbolName,
+                startDateTime: startDateTime,
+                endDateTime: endDateTime,
+                responsible: responsible,
+                demand: demand,
+                createdAt: new Date().toISOString(),
+                isPeriod: true
+            };
+
+            // Calcular todos os dias do período
+            const start = new Date(startDateTime);
+            const end = new Date(endDateTime);
+            const currentDate = new Date(start);
+            const affectedDates = [];
+
+            while (currentDate <= end) {
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                affectedDates.push(dateKey);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Adicionar evento a todos os dias do período
+            affectedDates.forEach((dateKey, index) => {
+                // Determinar se é início, meio ou fim do período
+                const position = index === 0 ? 'start' : (index === affectedDates.length - 1 ? 'end' : 'middle');
+                
+                const dayEventData = {
+                    ...eventData,
+                    periodPosition: position,
+                    totalDays: affectedDates.length
+                };
+
+                if (!calendarData[dateKey]) {
+                    calendarData[dateKey] = [];
+                } else if (!Array.isArray(calendarData[dateKey])) {
+                    calendarData[dateKey] = [calendarData[dateKey]];
+                }
+                
+                calendarData[dateKey].push(dayEventData);
+
+                if (database) {
+                    const dateRef = ref(database, `calendar/${dateKey}`);
+                    set(dateRef, calendarData[dateKey]);
+                }
+            });
+            
+            eventModal.classList.remove('active');
+            clearForm();
+            renderCalendar();
+        }
+
+        // Mostrar detalhes do evento
+        function showEventDetails(dateKey, eventData, eventIndex = 0) {
+            currentEventData = { dateKey, eventIndex, ...eventData };
+            
+            const detailContent = document.getElementById('detailContent');
+            
+            // Formatar datas
+            let timeInfo = '';
+            if (eventData.isPeriod) {
+                const startDate = new Date(eventData.startDateTime);
+                const endDate = new Date(eventData.endDateTime);
+                const formatDateTime = (date) => {
+                    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()} às ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                };
+                timeInfo = `
+                    <div class="detail-item">
+                        <strong>Início:</strong>
+                        ${formatDateTime(startDate)}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Fim:</strong>
+                        ${formatDateTime(endDate)}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Duração:</strong>
+                        ${eventData.totalDays} dia(s)
+                    </div>
+                `;
+            } else {
+                timeInfo = `
+                    <div class="detail-item">
+                        <strong>Data:</strong>
+                        ${formatDate(dateKey)}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Horário:</strong>
+                        ${eventData.time || 'Não especificado'}
+                    </div>
+                `;
+            }
+            
+            detailContent.innerHTML = `
+                <div class="detail-item">
+                    <strong>Símbolo:</strong>
+                    <span style="font-size: 2em;">${eventData.symbol}</span>
+                </div>
+                ${timeInfo}
+                <div class="detail-item">
+                    <strong>Responsável:</strong>
+                    ${eventData.responsible}
+                </div>
+                <div class="detail-item">
+                    <strong>Demanda:</strong>
+                    ${eventData.demand}
+                </div>
+            `;
+            
+            // Mostrar/ocultar botões de edição e exclusão conforme login
+            const editBtn = document.getElementById('editBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            if (auth.currentUser) {
+                editBtn.style.display = 'inline-block';
+                deleteBtn.style.display = 'inline-block';
+            } else {
+                editBtn.style.display = 'none';
+                deleteBtn.style.display = 'none';
+            }
+            
+            detailModal.classList.add('active');
+        }
+
+        // Editar evento
+        function editEvent() {
+            if (!auth.currentUser) {
+                alert('⚠️ Você precisa fazer login para editar carros.');
+                return;
+            }
+            if (!currentEventData) return;
+            detailModal.classList.remove('active');
+            // Preencher o formulário com os dados do evento
+            const eventData = currentEventData;
+            document.getElementById('eventStartDateTime').value = eventData.startDateTime;
+            document.getElementById('eventEndDateTime').value = eventData.endDateTime;
+            document.getElementById('eventResponsible').value = eventData.responsible;
+            document.getElementById('eventDemand').value = eventData.demand;
+            document.getElementById('eventSymbol').value = eventData.symbol;
+            // Definir o símbolo selecionado
+            selectedSymbol = eventData.symbol;
+            document.querySelectorAll('.symbol-btn').forEach(btn => {
+                if (btn.dataset.symbol === selectedSymbol) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            // Marcar que estamos editando (não criando novo)
+            currentDateKey = eventData.dateKey;
+            currentEventData.isEditing = true;
+            eventModal.classList.add('active');
+        }
+
+        // Excluir evento
+        function deleteEvent() {
+            if (!currentEventData) return;
+
+            const eventData = currentEventData;
+            
+            // Se for um período, perguntar se quer excluir só este dia ou todo o período
+            if (eventData.isPeriod) {
+                const choice = confirm(
+                    'Este evento faz parte de um período.\n\n' +
+                    'Clique em OK para excluir TODO O PERÍODO\n' +
+                    'Clique em CANCELAR para excluir APENAS ESTE DIA'
+                );
+                
+                if (choice) {
+                    // Excluir todo o período
+                    deleteEntirePeriod(eventData);
+                } else {
+                    // Excluir apenas este dia
+                    deleteSingleDay(eventData.dateKey, eventData.eventIndex);
+                }
+            } else {
+                // Evento simples, excluir normalmente
+                if (confirm('Deseja realmente excluir este evento?')) {
+                    deleteSingleDay(eventData.dateKey, eventData.eventIndex);
+                }
+            }
+        }
+
+        // Excluir apenas um dia específico
+        function deleteSingleDay(dateKey, eventIndex) {
+            if (!calendarData[dateKey]) return;
+
+            // Garante que o auth permaneça global
+            if (!window.auth) window.auth = auth;
+
+            if (Array.isArray(calendarData[dateKey])) {
+                // Corrige: só remove o evento do índice correto
+                if (eventIndex !== undefined && eventIndex !== null && calendarData[dateKey][eventIndex]) {
+                    calendarData[dateKey].splice(eventIndex, 1);
+                }
+                if (calendarData[dateKey].length === 0) {
+                    delete calendarData[dateKey];
+                }
+            } else {
+                delete calendarData[dateKey];
+            }
+
+            if (database) {
+                const dateRef = ref(database, `calendar/${dateKey}`);
+                if (calendarData[dateKey]) {
+                    set(dateRef, calendarData[dateKey]);
+                } else {
+                    remove(dateRef);
+                }
+            }
+
+            detailModal.classList.remove('active');
+            renderCalendar();
+        }
+
+        // Excluir período inteiro
+        function deleteEntirePeriod(eventData) {
+            if (!eventData.isPeriod) return;
+
+            // Garante que o auth permaneça global
+            if (!window.auth) window.auth = auth;
+
+            if (!confirm('Confirma a exclusão de TODO O PERÍODO?')) return;
+
+            // Calcular todos os dias do período
+            const start = new Date(eventData.startDateTime);
+            const end = new Date(eventData.endDateTime);
+            const currentDate = new Date(start);
+            const affectedDates = [];
+
+            while (currentDate <= end) {
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                affectedDates.push(dateKey);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Remover o evento de todos os dias do período
+            affectedDates.forEach(dateKey => {
+                if (calendarData[dateKey]) {
+                    if (Array.isArray(calendarData[dateKey])) {
+                        // Encontrar e remover eventos que correspondem ao mesmo ID (ou fallback para data)
+                        calendarData[dateKey] = calendarData[dateKey].filter(evt => {
+                            if (eventData.id && evt.id) {
+                                return evt.id !== eventData.id;
+                            }
+                            // Fallback para eventos antigos sem ID
+                            return !(evt.isPeriod && 
+                                   evt.startDateTime === eventData.startDateTime && 
+                                   evt.endDateTime === eventData.endDateTime);
+                        });
+                        
+                        if (calendarData[dateKey].length === 0) {
+                            delete calendarData[dateKey];
+                        }
+                    } else if (calendarData[dateKey].isPeriod && 
+                             calendarData[dateKey].startDateTime === eventData.startDateTime) {
+                        delete calendarData[dateKey];
+                    }
+
+                    if (database) {
+                        const dateRef = ref(database, `calendar/${dateKey}`);
+                        if (calendarData[dateKey]) {
+                            set(dateRef, calendarData[dateKey]);
+                        } else {
+                            remove(dateRef);
+                        }
+                    }
+                }
+            });
+
+            detailModal.classList.remove('active');
+            renderCalendar();
+        }
+
+        // Event listeners
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        // Seleção de símbolos
+        document.querySelectorAll('.symbol-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.symbol-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedSymbol = btn.dataset.symbol;
+                window.selectedSymbol = selectedSymbol; // Garante acesso global
+
+                // Limpar seleção de veículo se houver
+                if (selectedVehicle || window.selectedVehicle) {
+                    selectedVehicle = null;
+                    window.selectedVehicle = null;
+                    selectedVehicleImg = null;
+                    window.selectedVehicleImg = null;
+                    clearVehicleSelection();
+                }
+
+                symbolMenu.classList.remove('active');
+                
+                // Adicionar indicador visual no botão hamburger
+                hamburgerBtn.classList.add('has-selection');
+            });
+        });
+
+        // Nota: Sincronização com Firebase é feita no onAuthStateChanged acima
+    </script>
+</body>
+</html>

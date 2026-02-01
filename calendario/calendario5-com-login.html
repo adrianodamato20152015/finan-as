@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="app-version" content="2.5">
+    <title>Calendário 2026 - Programa Monitora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Tela de Login */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .login-form input {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-form button {
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-form button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .login-error {
+            color: #dc3545;
+            text-align: center;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .login-error.active {
+            display: block;
+        }
+
+        /* Botões de Login/Logout */
+        .login-btn, .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .login-btn {
+            background: #28a745;
+        }
+
+        .login-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: #dc3545;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Ocultar controles de edição quando não logado */
+        .read-only .hamburger-btn,
+        .read-only .symbol-menu {
+            display: none !important;
+        }
+
+        .read-only .day {
+            cursor: default !important;
+        }
+
+        /* Badge de modo leitura */
+        .read-only-badge {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 193, 7, 0.9);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+        }
+
+        .read-only .read-only-badge {
+            display: block;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .month-selector button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .month-selector button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .month-year {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .hamburger-btn {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .hamburger-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .hamburger-btn.has-selection::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #28a745;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .symbol-menu {
+            position: absolute;
+            top: 70px;
+            right: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .symbol-menu.active {
+            display: block;
+        }
+
+        .symbol-menu h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .symbol-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .symbol-btn {
+            width: 70px;
+            height: 70px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 2em;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        .symbol-btn span {
+            font-size: 0.4em;
+            margin-top: 3px;
+            color: #666;
+        }
+
+        .symbol-btn:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+
+        .symbol-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .symbol-btn.active span {
+            color: white;
+        }
+
+        .calendar {
+            padding: 30px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            padding: 15px;
+            font-size: 1.1em;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .day {
+            min-height: 120px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+            padding: 5px;
+            padding-top: 25px; /* Espaço para day-number e moon-phase posicionados absolute */
+        }
+
+        .day:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+        }
+
+        .day.other-month {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .day.today {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .day-number {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #333;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .day-symbol {
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex: 1;
+        }
+
+        .day-symbol .symbol-item {
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .day-symbol .symbol-item:hover {
+            transform: scale(1.2);
+        }
+
+        /* Indicadores de período */
+        .day-symbol .symbol-item.period-start::after,
+        .day-symbol .symbol-item.period-middle::before,
+        .day-symbol .symbol-item.period-middle::after,
+        .day-symbol .symbol-item.period-end::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 2px;
+            background: repeating-linear-gradient(
+                to right,
+                #667eea 0px,
+                #667eea 4px,
+                transparent 4px,
+                transparent 8px
+            );
+        }
+
+        .day-symbol .symbol-item.period-start::after {
+            right: -22px;
+        }
+
+        .day-symbol .symbol-item.period-end::before {
+            left: -22px;
+        }
+
+        .day-symbol .symbol-item.period-middle::before {
+            left: -22px;
+        }
+
+        .day-symbol .symbol-item.period-middle::after {
+            right: -22px;
+        }
+
+        .day-time {
+            font-size: 0.8em;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .moon-phase {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            opacity: 0.5;
+            font-size: 0.9em;
+            pointer-events: none;
+        }
+
+        .event-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .event-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .detail-modal.active {
+            display: flex;
+        }
+
+        .detail-content {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .legend {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .legend h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .legend-symbol {
+            font-size: 1.8em;
+            width: 40px;
+            text-align: center;
+        }
+
+        .legend-text {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .status {
+            padding: 10px 30px;
+            text-align: center;
+            background: #d1ecf1;
+            color: #0c5460;
+            font-weight: 500;
+        }
+
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .header p {
+                font-size: 0.9em;
+            }
+
+            .calendar {
+                padding: 10px;
+            }
+
+            .calendar-controls {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .weekdays,
+            .days {
+                gap: 5px;
+            }
+
+            .weekday {
+                padding: 8px;
+                font-size: 0.8em;
+            }
+
+            .day {
+                min-height: 80px;
+                padding: 3px;
+                padding-top: 20px;
+            }
+
+            .hamburger-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.8em;
+            }
+
+            .symbol-menu {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+
+            .symbol-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.3em;
+            }
+
+            .day-number {
+                font-size: 0.85em;
+            }
+
+            .day-symbol {
+                font-size: 1.2em;
+            }
+
+            .day-symbol .symbol-item {
+                font-size: 0.9em;
+            }
+
+            .day-time {
+                font-size: 0.65em;
+            }
+
+            .moon-phase {
+                font-size: 0.7em;
+            }
+
+            .modal-content,
+            .detail-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .legend-items {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h2>🔐 Login</h2>
+            <p>Calendário 2026 - Programa Monitora</p>
+            <form class="login-form" id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Senha" required>
+                <button type="submit">Entrar</button>
+                <div class="login-error" id="loginError">Email ou senha incorretos</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Botão de Logout -->
+    <button class="login-btn" id="loginBtn" style="display: none;">🔐 Entrar para Editar</button>
+    <button class="logout-btn" id="logoutBtn" style="display: none;">Sair</button>
+    <div class="read-only-badge" id="readOnlyBadge">👁️ Modo Visualização</div>
+
+    <div class="container" id="mainApp" style="display: none;">
+        <div class="header">
+            <h1>📅 Calendário 2026</h1>
+            <p>Programa Monitora - Calendário Colaborativo</p>
+        </div>
+
+        <div class="status" id="status">
+            Conectando...
+        </div>
+
+        <div class="calendar-controls">
+            <div class="month-selector">
+                <button id="prevMonth">◀</button>
+                <div class="month-year" id="monthYear"></div>
+                <button id="nextMonth">▶</button>
+            </div>
+
+            <div>
+                <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+                <div class="symbol-menu" id="symbolMenu">
+                    <h3>Selecione um símbolo</h3>
+                    <div class="symbol-selector">
+                        <button class="symbol-btn" data-symbol="🏖️" title="Férias">
+                            🏖️
+                            <span>Férias</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🏠" title="Home Office">
+                            🏠
+                            <span>Home</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🏢" title="Escritório">
+                            🏢
+                            <span>Escritório</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🤒" title="Doente">
+                            🤒
+                            <span>Doente</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="✈️" title="Viagem">
+                            ✈️
+                            <span>Viagem</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="📚" title="Treinamento">
+                            📚
+                            <span>Treino</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🐬" title="Monitoramento Peixe-Boi">
+                            🐬
+                            <span>Peixe-Boi</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🔭" title="Programa Monitora">
+                            🔭
+                            <span>Monitora</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🚗" title="Veículos na Praia">
+                            🚗
+                            <span>Veículos</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="⛵" title="Incursão Delta">
+                            ⛵
+                            <span>Inc.Delta</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🚤" title="Incursão Timonha">
+                            🚤
+                            <span>Inc.Tim.</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🦀" title="Caranguejo">
+                            🦀
+                            <span>Caranguejo</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="👮" title="Fiscalização" id="fiscalizacaoBtn" style="display: none;">
+                            👮
+                            <span>Fiscal.</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="👥" title="Reunião de Conselho">
+                            👥
+                            <span>Reunião</span>
+                        </button>
+                        <button class="symbol-btn" data-symbol="🚨" title="Prazo">
+                            🚨
+                            <span>Prazo</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calendar">
+            <div class="weekdays">
+                <div class="weekday">Dom</div>
+                <div class="weekday">Seg</div>
+                <div class="weekday">Ter</div>
+                <div class="weekday">Qua</div>
+                <div class="weekday">Qui</div>
+                <div class="weekday">Sex</div>
+                <div class="weekday">Sáb</div>
+            </div>
+            <div class="days" id="calendarDays"></div>
+        </div>
+
+        <div class="legend">
+            <h3>Legenda dos Símbolos</h3>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-symbol">🏖️</div>
+                    <div class="legend-text">Férias</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🏠</div>
+                    <div class="legend-text">Home Office</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🏢</div>
+                    <div class="legend-text">Escritório</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🤒</div>
+                    <div class="legend-text">Doente</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">✈️</div>
+                    <div class="legend-text">Viagem</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">📚</div>
+                    <div class="legend-text">Treinamento</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🐬</div>
+                    <div class="legend-text">Peixe-Boi</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🔭</div>
+                    <div class="legend-text">Prog. Monitora</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🚗</div>
+                    <div class="legend-text">Veículos na Praia</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">⛵</div>
+                    <div class="legend-text">Incursão Delta</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🚤</div>
+                    <div class="legend-text">Incursão Timonha</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🦀</div>
+                    <div class="legend-text">Caranguejo</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">👥</div>
+                    <div class="legend-text">Reunião de Conselho</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-symbol">🚨</div>
+                    <div class="legend-text">Prazo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar evento -->
+    <div class="event-modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Evento</h2>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="form-group">
+                <label>Símbolo:</label>
+                <input type="text" id="eventSymbol" readonly>
+            </div>
+            <div class="form-group">
+                <label>Data/Hora Início:</label>
+                <input type="datetime-local" id="eventStartDateTime" required>
+            </div>
+            <div class="form-group">
+                <label>Data/Hora Fim:</label>
+                <input type="datetime-local" id="eventEndDateTime" required>
+            </div>
+            <div class="form-group">
+                <label>Responsável:</label>
+                <input type="text" id="eventResponsible" placeholder="Digite o nome do responsável" required>
+            </div>
+            <div class="form-group">
+                <label>Demanda:</label>
+                <textarea id="eventDemand" placeholder="Descreva a demanda ou atividade" required></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+                <button class="btn btn-primary" id="saveBtn">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver detalhes -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-content">
+            <div class="modal-header">
+                <h2>Detalhes do Evento</h2>
+                <button class="close-btn" id="closeDetailModal">×</button>
+            </div>
+            <div id="detailContent"></div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="editBtn" style="display: none;">Editar</button>
+                <button class="btn btn-danger" id="deleteBtn">Excluir</button>
+                <button class="btn btn-secondary" id="closeDetailBtn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // ===== SISTEMA DE ATUALIZAÇÃO AUTOMÁTICA =====
+        const APP_VERSION = '2.5'; // Aumente este número quando atualizar o app
+        
+        function checkVersion() {
+            const savedVersion = localStorage.getItem('appVersion');
+            const metaVersion = document.querySelector('meta[name="app-version"]')?.content || APP_VERSION;
+            
+            if (savedVersion && savedVersion !== metaVersion) {
+                console.log(`Nova versão detectada: ${metaVersion} (anterior: ${savedVersion})`);
+                // Limpar cache do navegador
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        names.forEach(name => caches.delete(name));
+                    });
+                }
+                // Salvar nova versão
+                localStorage.setItem('appVersion', metaVersion);
+                // Recarregar página forçando busca no servidor
+                window.location.reload(true);
+            } else if (!savedVersion) {
+                localStorage.setItem('appVersion', metaVersion);
+            }
+        }
+        
+        // Verificar versão ao carregar
+        checkVersion();
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyArkkOn99T1YBfnX87mp-anY8p8deWQlYQ",
+            authDomain: "calendario2026-9b6b8.firebaseapp.com",
+            databaseURL: "https://calendario2026-9b6b8-default-rtdb.firebaseio.com",
+            projectId: "calendario2026-9b6b8",
+            storageBucket: "calendario2026-9b6b8.firebasestorage.app",
+            messagingSenderId: "19640507526",
+            appId: "1:19640507526:web:901ded870ff53f119e8507"
+        };
+
+        // Inicializar Firebase
+        let app, database, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            database = getDatabase(app);
+            auth = getAuth(app);
+        } catch (error) {
+            console.error('Erro ao conectar Firebase:', error);
+        }
+
+        // ===== AUTENTICAÇÃO =====
+        const loginScreen = document.getElementById('loginScreen');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const mainApp = document.getElementById('mainApp');
+        const container = document.querySelector('.container');
+
+        // Mostrar botão de login
+        loginBtn.addEventListener('click', () => {
+            loginScreen.classList.remove('hidden');
+        });
+
+        // Login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                loginError.classList.remove('active');
+            } catch (error) {
+                console.error('Erro no login:', error);
+                loginError.classList.add('active');
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error('Erro no logout:', error);
+            }
+        });
+
+        // Monitorar estado de autenticação
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuário logado - MODO EDIÇÃO
+                loginScreen.classList.add('hidden');
+                mainApp.style.display = 'block';
+                container.classList.remove('read-only');
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                
+                // Mostrar botão de fiscalização
+                const fiscalizacaoBtn = document.getElementById('fiscalizacaoBtn');
+                if (fiscalizacaoBtn) fiscalizacaoBtn.style.display = 'inline-flex';
+                
+                updateStatus('connected', `✓ Conectado como ${user.email.split('@')[0]}`);
+                
+                // Carregar dados do calendário
+                if (database) {
+                    const calendarRef = ref(database, 'calendar');
+                    onValue(calendarRef, (snapshot) => {
+                        calendarData = snapshot.val() || {};
+                        renderCalendar();
+                    });
+                }
+                
+                renderCalendar();
+            } else {
+                // Usuário não logado - MODO LEITURA
+                loginScreen.classList.add('hidden');
+                mainApp.style.display = 'block';
+                container.classList.add('read-only');
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                
+                // Ocultar botão de fiscalização
+                const fiscalizacaoBtn = document.getElementById('fiscalizacaoBtn');
+                if (fiscalizacaoBtn) fiscalizacaoBtn.style.display = 'none';
+                
+                updateStatus('info', '👁️ Modo visualização - Faça login para editar');
+                
+                // Carregar dados do calendário em modo leitura
+                if (database) {
+                    const calendarRef = ref(database, 'calendar');
+                    onValue(calendarRef, (snapshot) => {
+                        calendarData = snapshot.val() || {};
+                        renderCalendar();
+                    });
+                }
+                
+                renderCalendar();
+            }
+        });
+
+        // Estado da aplicação
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let selectedSymbol = null;
+        let calendarData = {};
+        let currentDateKey = null;
+        let currentEventData = null;
+
+        // Meses em português
+        const monthNames = [
+            'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        ];
+
+        // Calcular fase da lua
+        function getMoonPhase(year, month, day) {
+            // Fases da lua para 2026 baseadas no calendário lunar oficial
+            const moonPhases2026 = {
+                0: { // Janeiro
+                    3: '🌕', 10: '🌗', 18: '🌑', 26: '🌓'
+                },
+                1: { // Fevereiro
+                    1: '🌕', 8: '🌗', 16: '🌑', 25: '🌓'
+                },
+                2: { // Março
+                    3: '🌕', 10: '🌗', 17: '🌑', 25: '🌓'
+                },
+                3: { // Abril
+                    1: '🌕', 9: '🌗', 16: '🌑', 24: '🌓'
+                },
+                4: { // Maio
+                    1: '🌕', 9: '🌗', 16: '🌑', 23: '🌓', 30: '🌕'
+                },
+                5: { // Junho
+                    8: '🌗', 15: '🌑', 22: '🌓', 29: '🌕'
+                },
+                6: { // Julho
+                    7: '🌗', 14: '🌑', 21: '🌓', 29: '🌕'
+                },
+                7: { // Agosto
+                    6: '🌗', 12: '🌑', 20: '🌓', 27: '🌕'
+                },
+                8: { // Setembro
+                    4: '🌗', 11: '🌑', 19: '🌓', 27: '🌕'
+                },
+                9: { // Outubro
+                    4: '🌗', 11: '🌑', 18: '🌓', 25: '🌕'
+                },
+                10: { // Novembro
+                    2: '🌗', 9: '🌑', 17: '🌓', 24: '🌕'
+                },
+                11: { // Dezembro
+                    1: '🌗', 9: '🌑', 16: '🌓', 24: '🌕', 31: '🌗'
+                }
+            };
+            
+            // Verificar se o ano é 2026 e se existe fase da lua para este dia
+            if (year === 2026 && moonPhases2026[month] && moonPhases2026[month][day]) {
+                return moonPhases2026[month][day];
+            }
+            
+            return ''; // Sem fase da lua para outros anos ou dias
+        }
+
+        // Controle do menu sanduíche
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const symbolMenu = document.getElementById('symbolMenu');
+        
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            symbolMenu.classList.toggle('active');
+        });
+
+        // Fechar menu ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!symbolMenu.contains(e.target) && e.target !== hamburgerBtn) {
+                symbolMenu.classList.remove('active');
+            }
+        });
+
+        // Controle dos modais
+        const eventModal = document.getElementById('eventModal');
+        const detailModal = document.getElementById('detailModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const closeDetailModal = document.getElementById('closeDetailModal');
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+
+        closeModal.addEventListener('click', () => {
+            eventModal.classList.remove('active');
+            clearForm();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            eventModal.classList.remove('active');
+            clearForm();
+        });
+
+        closeDetailModal.addEventListener('click', () => {
+            detailModal.classList.remove('active');
+        });
+
+        closeDetailBtn.addEventListener('click', () => {
+            detailModal.classList.remove('active');
+        });
+
+        saveBtn.addEventListener('click', saveEvent);
+        editBtn.addEventListener('click', editEvent);
+        deleteBtn.addEventListener('click', deleteEvent);
+
+        function clearForm() {
+            document.getElementById('eventStartDateTime').value = '';
+            document.getElementById('eventEndDateTime').value = '';
+            document.getElementById('eventResponsible').value = '';
+            document.getElementById('eventDemand').value = '';
+            currentDateKey = null;
+        }
+
+        function formatDate(dateKey) {
+            const [year, month, day] = dateKey.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // Atualizar status
+        function updateStatus(type, message) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${type}`;
+            statusEl.textContent = message;
+        }
+
+        // Renderizar calendário
+        function renderCalendar() {
+            const calendarDays = document.getElementById('calendarDays');
+            const monthYear = document.getElementById('monthYear');
+            
+            monthYear.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            calendarDays.innerHTML = '';
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+
+            // Dias do mês anterior
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const dayEl = createDayElement(day, true);
+                calendarDays.appendChild(dayEl);
+            }
+
+            // Dias do mês atual
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = isCurrentMonth && day === today.getDate();
+                const dayEl = createDayElement(day, false, isToday);
+                calendarDays.appendChild(dayEl);
+            }
+
+            // Dias do próximo mês
+            const totalCells = calendarDays.children.length;
+            const remainingCells = 42 - totalCells; // 6 semanas x 7 dias
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayEl = createDayElement(day, true);
+                calendarDays.appendChild(dayEl);
+            }
+        }
+
+        // Criar elemento de dia
+        function createDayElement(day, isOtherMonth = false, isToday = false) {
+            const dayEl = document.createElement('div');
+            dayEl.className = 'day';
+            if (isOtherMonth) dayEl.classList.add('other-month');
+            if (isToday) dayEl.classList.add('today');
+
+            const dayNumber = document.createElement('div');
+            dayNumber.className = 'day-number';
+            dayNumber.textContent = day;
+
+            const daySymbol = document.createElement('div');
+            daySymbol.className = 'day-symbol';
+
+            // Adicionar fase da lua
+            const moonPhase = document.createElement('div');
+            moonPhase.className = 'moon-phase';
+            if (!isOtherMonth) {
+                const moonEmoji = getMoonPhase(currentYear, currentMonth, day);
+                moonPhase.textContent = moonEmoji;
+            }
+
+            if (!isOtherMonth) {
+                const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                if (calendarData[dateKey]) {
+                    // Suporta tanto array quanto objeto único (retrocompatibilidade)
+                    let events = Array.isArray(calendarData[dateKey]) ? calendarData[dateKey] : [calendarData[dateKey]];
+                    
+                    // Filtrar fiscalização se usuário não estiver logado
+                    if (!auth.currentUser) {
+                        events = events.filter(evt => evt.symbol !== '👮');
+                    }
+                    
+                    // Agrupar eventos por horário
+                    const eventsByTime = {};
+                    events.forEach((eventData, index) => {
+                        // Determinar horário do evento
+                        let timeKey = '';
+                        if (eventData.isPeriod) {
+                            const startDate = new Date(eventData.startDateTime);
+                            const endDate = new Date(eventData.endDateTime);
+                            const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+                            const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+                            
+                            // Calcular número de dias do período
+                            const diffTime = Math.abs(endDate - startDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                            
+                            // Mostrar horário apenas se for início ou fim do período
+                            if (eventData.periodPosition === 'start') {
+                                timeKey = startTime;
+                            } else if (eventData.periodPosition === 'end') {
+                                timeKey = endTime;
+                            } else {
+                                timeKey = ''; // Dias intermediários sem horário
+                            }
+                            
+                            // Adicionar classe para pontilhados apenas se período > 1 dia
+                            eventData.showPeriodLine = diffDays > 1;
+                        } else {
+                            timeKey = eventData.time || '';
+                        }
+                        
+                        if (!eventsByTime[timeKey]) {
+                            eventsByTime[timeKey] = [];
+                        }
+                        eventsByTime[timeKey].push({ eventData, index });
+                    });
+                    
+                    // Renderizar eventos agrupados por horário
+                    Object.entries(eventsByTime).forEach(([timeKey, eventsGroup]) => {
+                        // Container para cada grupo de horário
+                        const timeGroup = document.createElement('div');
+                        timeGroup.style.display = 'flex';
+                        timeGroup.style.flexDirection = 'column';
+                        timeGroup.style.alignItems = 'center';
+                        timeGroup.style.gap = '2px';
+                        timeGroup.style.marginBottom = '3px';
+                        
+                        // Container de símbolos
+                        const symbolsContainer = document.createElement('div');
+                        symbolsContainer.style.display = 'flex';
+                        symbolsContainer.style.gap = '3px';
+                        symbolsContainer.style.flexWrap = 'wrap';
+                        symbolsContainer.style.justifyContent = 'center';
+                        
+                        eventsGroup.forEach(({ eventData, index }) => {
+                            const symbolSpan = document.createElement('span');
+                            symbolSpan.className = 'symbol-item';
+                            
+                            // Adicionar pontilhados APENAS para períodos com MAIS DE 1 DIA
+                            if (eventData.isPeriod && eventData.totalDays > 1 && eventData.periodPosition) {
+                                symbolSpan.classList.add(`period-${eventData.periodPosition}`);
+                            }
+                            
+                            symbolSpan.textContent = eventData.symbol || '';
+                            
+                            // Tooltip com informações
+                            if (eventData.isPeriod) {
+                                symbolSpan.title = `Período de ${eventData.totalDays} dia(s) - ${eventData.responsible || ''}`;
+                            } else {
+                                symbolSpan.title = `${eventData.time || ''} - ${eventData.responsible || ''}`;
+                            }
+                            
+                            // Clique no símbolo mostra detalhes
+                            symbolSpan.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                showEventDetails(dateKey, eventData, index);
+                            });
+                            
+                            symbolsContainer.appendChild(symbolSpan);
+                        });
+                        
+                        timeGroup.appendChild(symbolsContainer);
+                        
+                        // Mostrar horário abaixo dos símbolos
+                        if (timeKey) {
+                            const timeSpan = document.createElement('div');
+                            timeSpan.style.fontSize = '0.7em';
+                            timeSpan.style.color = '#666';
+                            timeSpan.textContent = timeKey;
+                            timeGroup.appendChild(timeSpan);
+                        }
+                        
+                        daySymbol.appendChild(timeGroup);
+                    });
+                }
+
+                // Clique no dia abre modal para adicionar
+                dayEl.addEventListener('click', () => handleDayClick(dateKey));
+            }
+
+            dayEl.appendChild(dayNumber);
+            dayEl.appendChild(moonPhase);
+            dayEl.appendChild(daySymbol);
+
+            return dayEl;
+        }
+
+        // Lidar com clique no dia
+        function handleDayClick(dateKey) {
+            // Verificar se usuário está logado
+            if (!auth.currentUser) {
+                alert('⚠️ Você precisa fazer login para adicionar eventos.\n\nClique no botão "🔐 Entrar para Editar" no canto superior direito.');
+                return;
+            }
+
+            if (!selectedSymbol) {
+                alert('Selecione um símbolo primeiro no menu ☰');
+                return;
+            }
+
+            currentDateKey = dateKey;
+            
+            // Preencher data/hora inicial com a data clicada às 00:00
+            const [year, month, day] = dateKey.split('-');
+            const startDateTime = `${year}-${month}-${day}T00:00`;
+            const endDateTime = `${year}-${month}-${day}T23:59`;
+            
+            document.getElementById('eventStartDateTime').value = startDateTime;
+            document.getElementById('eventEndDateTime').value = endDateTime;
+            document.getElementById('eventSymbol').value = selectedSymbol;
+            eventModal.classList.add('active');
+        }
+
+        // Salvar evento
+        function saveEvent() {
+            const startDateTime = document.getElementById('eventStartDateTime').value;
+            const endDateTime = document.getElementById('eventEndDateTime').value;
+            const responsible = document.getElementById('eventResponsible').value;
+            const demand = document.getElementById('eventDemand').value;
+
+            if (!startDateTime || !endDateTime || !responsible || !demand) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            // Validar que fim é depois do início
+            if (new Date(endDateTime) < new Date(startDateTime)) {
+                alert('A data/hora de fim deve ser posterior à de início!');
+                return;
+            }
+
+            // Se estiver editando, remover o evento antigo primeiro
+            if (currentEventData && currentEventData.isEditing) {
+                if (currentEventData.isPeriod) {
+                    deleteEntirePeriod(currentEventData);
+                } else {
+                    deleteSingleDay(currentEventData.dateKey, currentEventData.eventIndex);
+                }
+                currentEventData.isEditing = false;
+            }
+
+            const eventData = {
+                symbol: selectedSymbol,
+                startDateTime: startDateTime,
+                endDateTime: endDateTime,
+                responsible: responsible,
+                demand: demand,
+                createdAt: new Date().toISOString(),
+                isPeriod: true
+            };
+
+            // Calcular todos os dias do período
+            const start = new Date(startDateTime);
+            const end = new Date(endDateTime);
+            const currentDate = new Date(start);
+            const affectedDates = [];
+
+            while (currentDate <= end) {
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                affectedDates.push(dateKey);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Adicionar evento a todos os dias do período
+            affectedDates.forEach((dateKey, index) => {
+                // Determinar se é início, meio ou fim do período
+                const position = index === 0 ? 'start' : (index === affectedDates.length - 1 ? 'end' : 'middle');
+                
+                const dayEventData = {
+                    ...eventData,
+                    periodPosition: position,
+                    totalDays: affectedDates.length
+                };
+
+                if (!calendarData[dateKey]) {
+                    calendarData[dateKey] = [];
+                } else if (!Array.isArray(calendarData[dateKey])) {
+                    calendarData[dateKey] = [calendarData[dateKey]];
+                }
+                
+                calendarData[dateKey].push(dayEventData);
+
+                if (database) {
+                    const dateRef = ref(database, `calendar/${dateKey}`);
+                    set(dateRef, calendarData[dateKey]);
+                }
+            });
+            
+            eventModal.classList.remove('active');
+            clearForm();
+            renderCalendar();
+        }
+
+        // Mostrar detalhes do evento
+        function showEventDetails(dateKey, eventData, eventIndex = 0) {
+            currentEventData = { dateKey, eventIndex, ...eventData };
+            
+            const detailContent = document.getElementById('detailContent');
+            
+            // Formatar datas
+            let timeInfo = '';
+            if (eventData.isPeriod) {
+                const startDate = new Date(eventData.startDateTime);
+                const endDate = new Date(eventData.endDateTime);
+                const formatDateTime = (date) => {
+                    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()} às ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                };
+                timeInfo = `
+                    <div class="detail-item">
+                        <strong>Início:</strong>
+                        ${formatDateTime(startDate)}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Fim:</strong>
+                        ${formatDateTime(endDate)}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Duração:</strong>
+                        ${eventData.totalDays} dia(s)
+                    </div>
+                `;
+            } else {
+                timeInfo = `
+                    <div class="detail-item">
+                        <strong>Data:</strong>
+                        ${formatDate(dateKey)}
+                    </div>
+                    <div class="detail-item">
+                        <strong>Horário:</strong>
+                        ${eventData.time || 'Não especificado'}
+                    </div>
+                `;
+            }
+            
+            detailContent.innerHTML = `
+                <div class="detail-item">
+                    <strong>Símbolo:</strong>
+                    <span style="font-size: 2em;">${eventData.symbol}</span>
+                </div>
+                ${timeInfo}
+                <div class="detail-item">
+                    <strong>Responsável:</strong>
+                    ${eventData.responsible}
+                </div>
+                <div class="detail-item">
+                    <strong>Demanda:</strong>
+                    ${eventData.demand}
+                </div>
+            `;
+            
+            // Mostrar/ocultar botões de edição e exclusão conforme login
+            const editBtn = document.getElementById('editBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            if (auth.currentUser) {
+                editBtn.style.display = 'inline-block';
+                deleteBtn.style.display = 'inline-block';
+            } else {
+                editBtn.style.display = 'none';
+                deleteBtn.style.display = 'none';
+            }
+            
+            detailModal.classList.add('active');
+        }
+
+        // Editar evento
+        function editEvent() {
+            if (!currentEventData) return;
+            
+            detailModal.classList.remove('active');
+            
+            // Preencher o formulário com os dados do evento
+            const eventData = currentEventData;
+            document.getElementById('eventStartDateTime').value = eventData.startDateTime;
+            document.getElementById('eventEndDateTime').value = eventData.endDateTime;
+            document.getElementById('eventResponsible').value = eventData.responsible;
+            document.getElementById('eventDemand').value = eventData.demand;
+            document.getElementById('eventSymbol').value = eventData.symbol;
+            
+            // Definir o símbolo selecionado
+            selectedSymbol = eventData.symbol;
+            document.querySelectorAll('.symbol-btn').forEach(btn => {
+                if (btn.dataset.symbol === selectedSymbol) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Marcar que estamos editando (não criando novo)
+            currentDateKey = eventData.dateKey;
+            currentEventData.isEditing = true;
+            
+            eventModal.classList.add('active');
+        }
+
+        // Excluir evento
+        function deleteEvent() {
+            if (!currentEventData) return;
+
+            const eventData = currentEventData;
+            
+            // Se for um período, perguntar se quer excluir só este dia ou todo o período
+            if (eventData.isPeriod) {
+                const choice = confirm(
+                    'Este evento faz parte de um período.\n\n' +
+                    'Clique em OK para excluir TODO O PERÍODO\n' +
+                    'Clique em CANCELAR para excluir APENAS ESTE DIA'
+                );
+                
+                if (choice) {
+                    // Excluir todo o período
+                    deleteEntirePeriod(eventData);
+                } else {
+                    // Excluir apenas este dia
+                    deleteSingleDay(eventData.dateKey, eventData.eventIndex);
+                }
+            } else {
+                // Evento simples, excluir normalmente
+                if (confirm('Deseja realmente excluir este evento?')) {
+                    deleteSingleDay(eventData.dateKey, eventData.eventIndex);
+                }
+            }
+        }
+
+        // Excluir apenas um dia específico
+        function deleteSingleDay(dateKey, eventIndex) {
+            if (!calendarData[dateKey]) return;
+
+            if (Array.isArray(calendarData[dateKey])) {
+                calendarData[dateKey].splice(eventIndex, 1);
+                if (calendarData[dateKey].length === 0) {
+                    delete calendarData[dateKey];
+                }
+            } else {
+                delete calendarData[dateKey];
+            }
+
+            if (database) {
+                const dateRef = ref(database, `calendar/${dateKey}`);
+                if (calendarData[dateKey]) {
+                    set(dateRef, calendarData[dateKey]);
+                } else {
+                    remove(dateRef);
+                }
+            }
+
+            detailModal.classList.remove('active');
+            renderCalendar();
+        }
+
+        // Excluir período inteiro
+        function deleteEntirePeriod(eventData) {
+            if (!eventData.isPeriod) return;
+            
+            if (!confirm('Confirma a exclusão de TODO O PERÍODO?')) return;
+
+            // Calcular todos os dias do período
+            const start = new Date(eventData.startDateTime);
+            const end = new Date(eventData.endDateTime);
+            const currentDate = new Date(start);
+            const affectedDates = [];
+
+            while (currentDate <= end) {
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                affectedDates.push(dateKey);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            // Remover o evento de todos os dias do período
+            affectedDates.forEach(dateKey => {
+                if (calendarData[dateKey]) {
+                    if (Array.isArray(calendarData[dateKey])) {
+                        // Encontrar e remover eventos que correspondem ao mesmo período
+                        calendarData[dateKey] = calendarData[dateKey].filter(evt => {
+                            return !(evt.isPeriod && 
+                                   evt.startDateTime === eventData.startDateTime && 
+                                   evt.endDateTime === eventData.endDateTime);
+                        });
+                        
+                        if (calendarData[dateKey].length === 0) {
+                            delete calendarData[dateKey];
+                        }
+                    } else if (calendarData[dateKey].isPeriod && 
+                             calendarData[dateKey].startDateTime === eventData.startDateTime) {
+                        delete calendarData[dateKey];
+                    }
+
+                    if (database) {
+                        const dateRef = ref(database, `calendar/${dateKey}`);
+                        if (calendarData[dateKey]) {
+                            set(dateRef, calendarData[dateKey]);
+                        } else {
+                            remove(dateRef);
+                        }
+                    }
+                }
+            });
+
+            detailModal.classList.remove('active');
+            renderCalendar();
+        }
+
+        // Event listeners
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+
+        // Seleção de símbolos
+        document.querySelectorAll('.symbol-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.symbol-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedSymbol = btn.dataset.symbol;
+                symbolMenu.classList.remove('active');
+                
+                // Adicionar indicador visual no botão hamburger
+                hamburgerBtn.classList.add('has-selection');
+            });
+        });
+
+        // Nota: Sincronização com Firebase é feita no onAuthStateChanged acima
+    </script>
+</body>
+</html>

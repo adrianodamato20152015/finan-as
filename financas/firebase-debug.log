@@ -1,0 +1,56 @@
+[debug] [2026-02-01T16:54:45.827Z] ----------------------------------------------------------------------
+[debug] [2026-02-01T16:54:45.828Z] Command:       /usr/local/share/nvm/versions/node/v24.11.1/bin/node /home/codespace/nvm/current/bin/firebase login:ci --no-localhost
+[debug] [2026-02-01T16:54:45.829Z] CLI Version:   15.3.1
+[debug] [2026-02-01T16:54:45.829Z] Platform:      linux
+[debug] [2026-02-01T16:54:45.829Z] Node Version:  v24.11.1
+[debug] [2026-02-01T16:54:45.829Z] Time:          Sun Feb 01 2026 16:54:45 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-02-01T16:54:45.829Z] ----------------------------------------------------------------------
+[debug] 
+[warn] ⚠  Authenticating with a `login:ci` token is deprecated and will be removed in a future major version of `firebase-tools`. Instead, use a service account key with `GOOGLE_APPLICATION_CREDENTIALS`: https://cloud.google.com/docs/authentication/getting-started 
+[debug] [2026-02-01T16:54:46.045Z] >>> [apiv2][query] POST https://auth.firebase.tools/attest [none]
+[debug] [2026-02-01T16:54:46.045Z] >>> [apiv2][body] POST https://auth.firebase.tools/attest {"session_id":"287eff0d-3556-4bbb-9795-4cd3d06dba09"}
+[debug] [2026-02-01T16:54:46.262Z] <<< [apiv2][status] POST https://auth.firebase.tools/attest 200
+[debug] [2026-02-01T16:54:46.263Z] <<< [apiv2][body] POST https://auth.firebase.tools/attest {"token":"GlfhgSSk6jackDjuHgsGlBYTZdkG6unjUdRu6pZazWg"}
+[info] 
+[info] To sign in to the Firebase CLI:
+[info] 
+[info] 1. Take note of your session ID:
+[info] 
+[info]    287EF
+[info] 
+[info] 2. Visit the URL below on any device and follow the instructions to get your code:
+[info] 
+[info]    https://auth.firebase.tools/login?code_challenge=LIcR5zoST82nWRpwP2TLHKTjI820HiQ6L5g1KOOy39E&session=287eff0d-3556-4bbb-9795-4cd3d06dba09&attest=GlfhgSSk6jackDjuHgsGlBYTZdkG6unjUdRu6pZazWg
+[info] 
+[info] 3. Paste or enter the authorization code below once you have it:
+[info] 
+[debug] [2026-02-01T16:56:22.310Z] ----------------------------------------------------------------------
+[debug] [2026-02-01T16:56:22.311Z] Command:       /usr/local/share/nvm/versions/node/v24.11.1/bin/node /home/codespace/nvm/current/bin/firebase login
+[debug] [2026-02-01T16:56:22.312Z] CLI Version:   15.3.1
+[debug] [2026-02-01T16:56:22.312Z] Platform:      linux
+[debug] [2026-02-01T16:56:22.312Z] Node Version:  v24.11.1
+[debug] [2026-02-01T16:56:22.312Z] Time:          Sun Feb 01 2026 16:56:22 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-02-01T16:56:22.312Z] ----------------------------------------------------------------------
+[debug] 
+[info] i  The Firebase CLI’s MCP server feature can optionally make use of Gemini in Firebase. Learn more about Gemini in Firebase and how it uses your data: https://firebase.google.com/docs/gemini-in-firebase#how-gemini-in-firebase-uses-your-data 
+[info] 
+[info] i  Firebase optionally collects CLI and Emulator Suite usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you. 
+[info] 
+[info] i  To change your preferences at any time, run `firebase logout` and `firebase login` again. 
+[debug] [2026-02-01T16:56:37.226Z] >>> [apiv2][query] POST https://auth.firebase.tools/attest [none]
+[debug] [2026-02-01T16:56:37.226Z] >>> [apiv2][body] POST https://auth.firebase.tools/attest {"session_id":"25196205-6868-415a-9f78-931520e18510"}
+[debug] [2026-02-01T16:56:37.479Z] <<< [apiv2][status] POST https://auth.firebase.tools/attest 200
+[debug] [2026-02-01T16:56:37.479Z] <<< [apiv2][body] POST https://auth.firebase.tools/attest {"token":"kixuMKWvIkOuRQuR4UbGINsKC503FsIFbYqErsqXjBE"}
+[info] 
+[info] To sign in to the Firebase CLI:
+[info] 
+[info] 1. Take note of your session ID:
+[info] 
+[info]    25196
+[info] 
+[info] 2. Visit the URL below on any device and follow the instructions to get your code:
+[info] 
+[info]    https://auth.firebase.tools/login?code_challenge=jjMF5KfpyWfQ7Ngqw6H4hNmndy0pM9FWGH1cFXAKigo&session=25196205-6868-415a-9f78-931520e18510&attest=kixuMKWvIkOuRQuR4UbGINsKC503FsIFbYqErsqXjBE
+[info] 
+[info] 3. Paste or enter the authorization code below once you have it:
+[info] 
