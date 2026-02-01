@@ -997,7 +997,7 @@
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUser = user;
-                userDocRef = db.collection('users').doc(user.uid).collection('financialData');
+                userDocRef = db.collection('users').doc(user.uid).collection('months');
                 
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
@@ -1052,6 +1052,11 @@
                     categories = data.categories || {};
                     consignados = data.consignados || [];
                     dailyHistory = data.dailyHistory || {};
+                    
+                    // Atualizar a interface com os dados carregados
+                    updateDisplay();
+                    updateExpensesList();
+                    updateConsignadosList();
                 }
                 
                 console.log(`Dados carregados do Firebase: ${Object.keys(monthlyData).length} meses`);
