@@ -1031,7 +1031,16 @@
                     }
                 }
                 
-                // Carregar dados do mês de trabalho
+                // Carregar TODOS os meses salvos no Firebase
+                const allMonthsSnapshot = await userDocRef.get();
+                monthlyData = {};
+                
+                allMonthsSnapshot.forEach(doc => {
+                    const monthYear = doc.id.replace('-', '/');
+                    monthlyData[monthYear] = doc.data();
+                });
+                
+                // Carregar dados do mês de trabalho atual
                 const monthKey = workingMonthYear.replace('/', '-');
                 const monthDoc = await userDocRef.doc(monthKey).get();
                 
@@ -1045,7 +1054,7 @@
                     dailyHistory = data.dailyHistory || {};
                 }
                 
-                console.log('Dados carregados do Firebase');
+                console.log(`Dados carregados do Firebase: ${Object.keys(monthlyData).length} meses`);
             } catch (error) {
                 console.error('Erro ao carregar dados do Firebase:', error);
             }
