@@ -436,6 +436,10 @@
                 font-size: 1.1rem;
             }
             
+            .radio-option input[type="radio"] {
+                display: none;
+            }
+            
             .radio-option label {
                 font-size: 1.1rem;
             }
@@ -1101,20 +1105,6 @@
                     categories = data.categories || {};
                     consignados = data.consignados || [];
                     dailyHistory = data.dailyHistory || {};
-                    
-                    // Se tem income salvo mas não tem receitas no array, criar receita genérica
-                    if ((data.income || 0) > 0 && extraIncomes.filter(i => i.type === 'fixed').length === 0) {
-                        extraIncomes.push({
-                            id: Date.now(),
-                            description: 'Receita Mensal (Salário + Outros)',
-                            amount: data.income,
-                            category: 'Salário',
-                            type: 'fixed',
-                            date: new Date().toISOString().split('T')[0]
-                        });
-                        // Salvar a conversão no Firebase
-                        saveToFirebase();
-                    }
                     
                     // SEMPRE recalcular monthlyIncome com base nas receitas do array
                     calculateMonthlyIncome();
