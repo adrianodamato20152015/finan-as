@@ -21,4 +21,4 @@ jobs:
       - name: Deploy para Firebase Hosting
         run: |
           cd financas
-          firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
+          firebase deploy --only hosting --project financas2026-b7c2a --token "${{ secrets.FIREBASE_TOKEN }}"
