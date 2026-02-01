@@ -161,40 +161,56 @@
                     const monthKey = monthYear.replace('/', '-');
                     const monthData = data.monthlyData[monthYear];
                     
+                    // Função para remover valores null e undefined
+                    const cleanObject = (obj) => {
+                        if (Array.isArray(obj)) {
+                            return obj.map(item => cleanObject(item)).filter(item => item !== null && item !== undefined);
+                        }
+                        if (obj !== null && typeof obj === 'object') {
+                            const cleaned = {};
+                            for (const key in obj) {
+                                if (obj[key] !== null && obj[key] !== undefined) {
+                                    cleaned[key] = cleanObject(obj[key]);
+                                }
+                            }
+                            return cleaned;
+                        }
+                        return obj;
+                    };
+                    
                     // Limpar e validar dados antes de salvar
-                    const cleanExpenses = (monthData.expenses || []).map(exp => ({
+                    const cleanExpenses = (monthData.expenses || []).map(exp => cleanObject({
                         id: exp.id || Date.now(),
-                        description: String(exp.description || ''),
-                        amount: Number(exp.amount || 0),
-                        category: String(exp.category || 'Outros'),
-                        type: String(exp.type || 'fixed'),
-                        date: String(exp.date || new Date().toISOString().split('T')[0]),
-                        attachment: exp.attachment || null
+                        description: exp.description || '',
+                        amount: exp.amount || 0,
+                        category: exp.category || 'Outros',
+                        type: exp.type || 'fixed',
+                        date: exp.date || new Date().toISOString().split('T')[0]
                     }));
                     
-                    const cleanExtraIncomes = (monthData.extraIncomes || []).map(inc => ({
+                    const cleanExtraIncomes = (monthData.extraIncomes || []).map(inc => cleanObject({
                         id: inc.id || Date.now(),
-                        description: String(inc.description || ''),
-                        amount: Number(inc.amount || 0),
-                        date: String(inc.date || new Date().toISOString().split('T')[0])
+                        description: inc.description || '',
+                        amount: inc.amount || 0,
+                        date: inc.date || new Date().toISOString().split('T')[0]
                     }));
                     
-                    const cleanConsignados = (monthData.consignados || []).map(cons => ({
+                    const cleanConsignados = (monthData.consignados || []).map(cons => cleanObject({
                         id: cons.id || Date.now(),
-                        nome: String(cons.nome || ''),
-                        valorTotal: Number(cons.valorTotal || 0),
-                        valorParcela: Number(cons.valorParcela || 0),
-                        parcelasPagas: Number(cons.parcelasPagas || 0),
-                        parcelasRestantes: Number(cons.parcelasRestantes || 0)
+                        nome: cons.nome || '',
+                        valorTotal: cons.valorTotal || 0,
+                        valorParcela: cons.valorParcela || 0,
+                        parcelasPagas: cons.parcelasPagas || 0,
+                        parcelasRestantes: cons.parcelasRestantes || 0
                     }));
                     
                     await userDocRef.doc(monthKey).set({
                         income: Number(monthData.income || 0),
                         expenses: cleanExpenses,
                         extraIncomes: cleanExtraIncomes,
-                        categories: monthData.categories || {},
+                        categories: cleanObject(monthData.categories || {}),
                         consignados: cleanConsignados,
-                        dailyHistory: monthData.dailyHistory || {},
+                        dailyHistory: cleanObject(monthData.dailyHistory || {}),
                         lastModified: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
