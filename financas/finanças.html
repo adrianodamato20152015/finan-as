@@ -703,15 +703,6 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="card">
-                <div class="export-section">
-                    <h3>Exportar/Importar Dados</h3>
-                    <button id="export-json-btn" class="btn-success">Exportar para JSON</button>
-                    <button id="import-json-btn" class="btn-success">Importar de JSON</button>
-                    <input type="file" id="json-file-input" class="file-input" accept=".json" style="display: none;">
-                </div>
-            </div>
         </div>
         
         <div class="tab-content" id="consignados-tab">
@@ -1171,9 +1162,6 @@
         const expenseForm = document.getElementById('expense-form');
         const expensesList = document.getElementById('expenses-list');
         const categorySummary = document.getElementById('category-summary');
-        const exportJsonBtn = document.getElementById('export-json-btn');
-        const importJsonBtn = document.getElementById('import-json-btn');
-        const jsonFileInput = document.getElementById('json-file-input');
         const chartLegend = document.getElementById('chart-legend');
         const annualSummary = document.getElementById('annual-summary');
         const tabs = document.querySelectorAll('.tab');
@@ -1182,9 +1170,6 @@
         // Event Listeners
         expenseForm.addEventListener('submit', addExpense);
         document.getElementById('income-form').addEventListener('submit', addExtraIncome);
-        exportJsonBtn.addEventListener('click', exportToJson);
-        importJsonBtn.addEventListener('click', () => jsonFileInput.click());
-        jsonFileInput.addEventListener('change', importFromJson);
         
         // Mostrar/ocultar campo de data para despesas eventuais
         document.querySelectorAll('input[name="expense-type"]').forEach(radio => {
@@ -3009,86 +2994,6 @@
             `;
             
             annualSummary.innerHTML = tableHTML;
-        }
-
-        // Função para exportar dados para JSON
-        function exportToJson() {
-            // Salvar mês atual antes de exportar
-            saveCurrentMonth();
-            
-            const data = {
-                workingMonthYear: workingMonthYear,
-                monthlyIncome: monthlyIncome,
-                expenses: expenses,
-                extraIncomes: extraIncomes,
-                categories: categories,
-                dailyHistory: dailyHistory,
-                monthlyData: monthlyData,
-                exportDate: new Date().toISOString()
-            };
-            
-            const jsonString = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `controle-financeiro-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            alert('Dados exportados com sucesso!');
-        }
-
-        // Função para importar dados de JSON
-        function importFromJson(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    
-                    // Validar dados importados
-                    if (typeof data.monthlyData !== 'object') {
-                        throw new Error('Formato de arquivo inválido');
-                    }
-                    
-                    // Atualizar dados gerais
-                    monthlyData = data.monthlyData || {};
-                    
-                    // Se houver mês de trabalho salvo, usar ele, senão usar o atual
-                    const importedWorkingMonth = data.workingMonthYear || workingMonthYear;
-                    
-                    // Atualizar seletores
-                    const [month, year] = importedWorkingMonth.split('/');
-                    document.getElementById('month-selector').value = month;
-                    document.getElementById('year-selector').value = year;
-                    
-                    // Carregar o mês de trabalho
-                    loadMonth(importedWorkingMonth);
-                    
-                    // Salvar TODOS os dados importados no Firebase
-                    if (currentUser) {
-                        saveAllMonthsToFirebase().then(() => {
-                            const monthName = getMonthName(parseInt(month));
-                            alert(`Dados importados com sucesso e salvos no Firebase!\n\nTrabalhando com ${monthName}/${year}`);
-                        });
-                    } else {
-                        const monthName = getMonthName(parseInt(month));
-                        alert(`Dados importados com sucesso!\n\nTrabalhando com ${monthName}/${year}\n\nAtenção: Faça login para salvar na nuvem.`);
-                    }
-                } catch (error) {
-                    alert('Erro ao importar dados: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-            
-            // Limpar o input de arquivo
-            event.target.value = '';
         }
 
         // Função para formatar valores monetários

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popular Firebase - Finanças 2026</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Popular Firebase com Dados</h1>
+        <p>Este script irá popular o Firebase com todos os dados do arquivo JSON.</p>
+        
+        <h3>Login</h3>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Senha">
+        <button id="login-btn">Fazer Login</button>
+        
+        <hr style="margin: 30px 0;">
+        
+        <button id="populate-btn" disabled>Popular Firebase com Dados</button>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDzC1LY0HzbwIs97P-raB-9nG2Cl4aN4vM",
+            authDomain: "financas2026-b7c2a.firebaseapp.com",
+            projectId: "financas2026-b7c2a",
+            storageBucket: "financas2026-b7c2a.firebasestorage.app",
+            messagingSenderId: "885732414271",
+            appId: "1:885732414271:web:d5da2c551e353ae603798a"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        let currentUser = null;
+        
+        const loginBtn = document.getElementById('login-btn');
+        const populateBtn = document.getElementById('populate-btn');
+        const statusDiv = document.getElementById('status');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        
+        // Login
+        loginBtn.addEventListener('click', async () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            if (!email || !password) {
+                showStatus('Por favor, preencha email e senha', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('Fazendo login...', 'info');
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                populateBtn.disabled = false;
+                showStatus(`Login realizado com sucesso! Usuário: ${currentUser.email}`, 'success');
+            } catch (error) {
+                showStatus('Erro no login: ' + error.message, 'error');
+            }
+        });
+        
+        // Popular Firebase
+        populateBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                showStatus('Faça login primeiro!', 'error');
+                return;
+            }
+            
+            populateBtn.disabled = true;
+            showStatus('Carregando dados do JSON...', 'info');
+            
+            try {
+                // Carregar o arquivo JSON
+                const response = await fetch('controle-financeiro-2026-01-20 (8).json');
+                const data = await response.json();
+                
+                showStatus('Salvando dados no Firebase...', 'info');
+                
+                const userDocRef = db.collection('users').doc(currentUser.uid).collection('months');
+                
+                // Salvar cada mês
+                let monthCount = 0;
+                for (const monthYear in data.monthlyData) {
+                    const monthKey = monthYear.replace('/', '-');
+                    const monthData = data.monthlyData[monthYear];
+                    
+                    await userDocRef.doc(monthKey).set({
+                        income: monthData.income || 0,
+                        expenses: monthData.expenses || [],
+                        extraIncomes: monthData.extraIncomes || [],
+                        categories: monthData.categories || {},
+                        consignados: monthData.consignados || [],
+                        dailyHistory: monthData.dailyHistory || {},
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    monthCount++;
+                    showStatus(`Salvando... ${monthCount} meses processados`, 'info');
+                }
+                
+                // Salvar mês de trabalho atual
+                await db.collection('users').doc(currentUser.uid).set({
+                    workingMonthYear: data.workingMonthYear || '02/2026'
+                }, { merge: true });
+                
+                showStatus(`✅ Sucesso! ${monthCount} meses salvos no Firebase!`, 'success');
+                
+            } catch (error) {
+                showStatus('Erro ao popular Firebase: ' + error.message, 'error');
+                populateBtn.disabled = false;
+            }
+        });
+        
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+            statusDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
