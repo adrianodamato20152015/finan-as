@@ -1092,6 +1092,42 @@
             }
         }
         
+        // Função para salvar TODOS os meses no Firebase (usada após importar JSON)
+        async function saveAllMonthsToFirebase() {
+            if (!currentUser || !userDocRef) {
+                console.log('Usuário não autenticado');
+                return;
+            }
+            
+            try {
+                // Salvar cada mês do monthlyData
+                for (const monthYear in monthlyData) {
+                    const monthKey = monthYear.replace('/', '-');
+                    const data = monthlyData[monthYear];
+                    
+                    await userDocRef.doc(monthKey).set({
+                        income: data.income || 0,
+                        expenses: data.expenses || [],
+                        extraIncomes: data.extraIncomes || [],
+                        categories: data.categories || {},
+                        consignados: data.consignados || [],
+                        dailyHistory: data.dailyHistory || {},
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+                
+                // Salvar mês de trabalho atual
+                await db.collection('users').doc(currentUser.uid).set({
+                    workingMonthYear: workingMonthYear
+                }, { merge: true });
+                
+                console.log('Todos os meses salvos no Firebase');
+            } catch (error) {
+                console.error('Erro ao salvar todos os meses no Firebase:', error);
+                alert('Erro ao sincronizar todos os dados com a nuvem.');
+            }
+        }
+        
         // ========== FIM CONFIGURAÇÃO FIREBASE ==========
         
         // Limpar TODOS os dados armazenados ao abrir a página (comentado para não limpar dados do Firebase)
@@ -3035,9 +3071,9 @@
                     // Carregar o mês de trabalho
                     loadMonth(importedWorkingMonth);
                     
-                    // Salvar dados importados no Firebase
+                    // Salvar TODOS os dados importados no Firebase
                     if (currentUser) {
-                        saveToFirebase().then(() => {
+                        saveAllMonthsToFirebase().then(() => {
                             const monthName = getMonthName(parseInt(month));
                             alert(`Dados importados com sucesso e salvos no Firebase!\n\nTrabalhando com ${monthName}/${year}`);
                         });
