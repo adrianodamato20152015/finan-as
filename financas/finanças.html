@@ -3035,8 +3035,16 @@
                     // Carregar o mês de trabalho
                     loadMonth(importedWorkingMonth);
                     
-                    const monthName = getMonthName(parseInt(month));
-                    alert(`Dados importados com sucesso!\n\nTrabalhando com ${monthName}/${year}`);
+                    // Salvar dados importados no Firebase
+                    if (currentUser) {
+                        saveToFirebase().then(() => {
+                            const monthName = getMonthName(parseInt(month));
+                            alert(`Dados importados com sucesso e salvos no Firebase!\n\nTrabalhando com ${monthName}/${year}`);
+                        });
+                    } else {
+                        const monthName = getMonthName(parseInt(month));
+                        alert(`Dados importados com sucesso!\n\nTrabalhando com ${monthName}/${year}\n\nAtenção: Faça login para salvar na nuvem.`);
+                    }
                 } catch (error) {
                     alert('Erro ao importar dados: ' + error.message);
                 }
