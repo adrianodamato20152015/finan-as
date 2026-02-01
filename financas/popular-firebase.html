@@ -161,12 +161,39 @@
                     const monthKey = monthYear.replace('/', '-');
                     const monthData = data.monthlyData[monthYear];
                     
+                    // Limpar e validar dados antes de salvar
+                    const cleanExpenses = (monthData.expenses || []).map(exp => ({
+                        id: exp.id || Date.now(),
+                        description: String(exp.description || ''),
+                        amount: Number(exp.amount || 0),
+                        category: String(exp.category || 'Outros'),
+                        type: String(exp.type || 'fixed'),
+                        date: String(exp.date || new Date().toISOString().split('T')[0]),
+                        attachment: exp.attachment || null
+                    }));
+                    
+                    const cleanExtraIncomes = (monthData.extraIncomes || []).map(inc => ({
+                        id: inc.id || Date.now(),
+                        description: String(inc.description || ''),
+                        amount: Number(inc.amount || 0),
+                        date: String(inc.date || new Date().toISOString().split('T')[0])
+                    }));
+                    
+                    const cleanConsignados = (monthData.consignados || []).map(cons => ({
+                        id: cons.id || Date.now(),
+                        nome: String(cons.nome || ''),
+                        valorTotal: Number(cons.valorTotal || 0),
+                        valorParcela: Number(cons.valorParcela || 0),
+                        parcelasPagas: Number(cons.parcelasPagas || 0),
+                        parcelasRestantes: Number(cons.parcelasRestantes || 0)
+                    }));
+                    
                     await userDocRef.doc(monthKey).set({
-                        income: monthData.income || 0,
-                        expenses: monthData.expenses || [],
-                        extraIncomes: monthData.extraIncomes || [],
+                        income: Number(monthData.income || 0),
+                        expenses: cleanExpenses,
+                        extraIncomes: cleanExtraIncomes,
                         categories: monthData.categories || {},
-                        consignados: monthData.consignados || [],
+                        consignados: cleanConsignados,
                         dailyHistory: monthData.dailyHistory || {},
                         lastModified: firebase.firestore.FieldValue.serverTimestamp()
                     });
