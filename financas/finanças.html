@@ -193,7 +193,7 @@
         }
         
         .radio-option input[type="radio"] {
-            margin: 0;
+            display: none;
         }
         
         .radio-option label {
@@ -413,9 +413,91 @@
             background-color: #f9f9f9;
         }
         
+        /* Estilos para seções recolhíveis */
+        .collapsible-section {
+            margin-bottom: 15px;
+        }
+        
+        .collapsible-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+            box-shadow: var(--shadow);
+        }
+        
+        .collapsible-header:hover {
+            background-color: #2980b9;
+        }
+        
+        .collapsible-header.success {
+            background-color: var(--secondary-color);
+        }
+        
+        .collapsible-header.success:hover {
+            background-color: #27ae60;
+        }
+        
+        .collapsible-header::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+        
+        .collapsible-header.collapsed::after {
+            transform: rotate(-90deg);
+        }
+        
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .collapsible-content.expanded {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+        
+        .collapsible-content .card {
+            margin-top: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        
         @media (max-width: 768px) {
             .dashboard, .form-section, .chart-section {
                 grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 12px;
+                margin-bottom: 10px;
+            }
+            
+            .card h2 {
+                font-size: 0.95rem;
+                margin-bottom: 8px;
+            }
+            
+            .balance {
+                font-size: 1.3rem;
+                margin: 5px 0;
+            }
+            
+            .card p {
+                font-size: 0.75rem !important;
+                margin-top: 5px !important;
             }
             
             .chart-container {
@@ -426,14 +508,19 @@
                 flex-direction: column;
             }
             
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
             .radio-group {
-                gap: 10px;
+                gap: 8px;
             }
             
             .radio-option {
-                padding: 12px 20px;
-                min-width: 100px;
-                font-size: 1.1rem;
+                padding: 8px 12px;
+                min-width: 80px;
+                font-size: 0.9rem;
             }
             
             .radio-option input[type="radio"] {
@@ -441,12 +528,48 @@
             }
             
             .radio-option label {
-                font-size: 1.1rem;
+                font-size: 0.9rem;
             }
             
             button {
-                padding: 12px 18px;
-                font-size: 1.05rem;
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            
+            input, select {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .form-group {
+                margin-bottom: 10px;
+            }
+            
+            label {
+                font-size: 0.9rem;
+                margin-bottom: 3px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            .collapsible-header {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .collapsible-section {
+                margin-bottom: 10px;
             }
         }
     </style>
@@ -561,9 +684,15 @@
         <div class="tab-content active" id="monthly-tab">
             <div class="dashboard">
                 <div class="card">
-                    <h2>Receita Mensal</h2>
+                    <h2>Receitas Fixas</h2>
                     <div class="balance positive" id="monthly-income">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #777; margin-top: 10px;">Total de todas as receitas do mês</p>
+                    <p style="font-size: 0.9rem; color: #777; margin-top: 10px;">Total de receitas fixas mensais</p>
+                </div>
+                
+                <div class="card">
+                    <h2>Receitas Eventuais</h2>
+                    <div class="balance positive" id="occasional-income-total">R$ 0,00</div>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Receitas eventuais do mês</p>
                 </div>
                 
                 <div class="card">
@@ -573,187 +702,202 @@
                 </div>
                 
                 <div class="card">
-                    <h2>Saldo Geral</h2>
-                    <div class="balance" id="current-balance">R$ 0,00</div>
-                    <div id="balance-status"></div>
-                </div>
-                
-                <div class="card">
-                    <h2>Gastos de Hoje</h2>
-                    <div class="balance negative" id="today-expenses">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Despesas eventuais de hoje</p>
-                </div>
-                
-                <div class="card">
-                    <h2>Acumulado gastos eventuais</h2>
+                    <h2>Despesas Eventuais</h2>
                     <div class="balance negative" id="month-occasional-total">R$ 0,00</div>
                     <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Gastos eventuais acumulados no mês</p>
                 </div>
                 
                 <div class="card">
-                    <h2>Acumulo receitas eventuais</h2>
-                    <div class="balance positive" id="occasional-income-total">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Receitas eventuais do mês</p>
+                    <h2>Despesas do Dia</h2>
+                    <div class="balance negative" id="today-expenses">R$ 0,00</div>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Despesas eventuais de hoje</p>
+                </div>
+                
+                <div class="card">
+                    <h2>Saldo Mensal</h2>
+                    <div class="balance" id="current-balance">R$ 0,00</div>
+                    <div id="balance-status"></div>
                 </div>
             </div>
             
-            <div class="form-section">
-                <div class="card">
-                    <h2>Adicionar Despesa</h2>
-                    <form id="expense-form">
-                        <div class="form-group">
-                            <label for="expense-description">Descrição</label>
-                            <input type="text" id="expense-description" placeholder="Ex: Aluguel, Supermercado" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="expense-amount">Valor (R$)</label>
-                            <input type="number" id="expense-amount" placeholder="0,00" step="0.01" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="expense-category">Categoria</label>
-                            <select id="expense-category" required>
-                                <option value="">Selecione uma categoria</option>
-                                <option value="Moradia">Moradia</option>
-                                <option value="Alimentação">Alimentação</option>
-                                <option value="Transporte">Transporte</option>
-                                <option value="Saúde">Saúde</option>
-                                <option value="Educação">Educação</option>
-                                <option value="Lazer">Lazer</option>
-                                <option value="Juros">Juros</option>
-                                <option value="Outros">Outros</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Tipo de Despesa</label>
-                            <div class="radio-group">
-                                <div class="radio-option">
-                                    <input type="radio" id="expense-type-fixed" name="expense-type" value="fixed" checked>
-                                    <label for="expense-type-fixed">Fixa</label>
-                                </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="expense-type-occasional" name="expense-type" value="occasional">
-                                    <label for="expense-type-occasional">Eventual</label>
+            <!-- Seção Adicionar Despesa (Recolhível) -->
+            <div class="collapsible-section">
+                <button class="collapsible-header collapsed" onclick="toggleCollapsible(this)">
+                    Adicionar Despesa
+                </button>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <form id="expense-form">
+                            <div class="form-group">
+                                <label for="expense-description">Descrição</label>
+                                <input type="text" id="expense-description" placeholder="Ex: Aluguel, Supermercado" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expense-amount">Valor (R$)</label>
+                                <input type="number" id="expense-amount" placeholder="0,00" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expense-category">Categoria</label>
+                                <select id="expense-category" required>
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="Moradia">Moradia</option>
+                                    <option value="Alimentação">Alimentação</option>
+                                    <option value="Transporte">Transporte</option>
+                                    <option value="Saúde">Saúde</option>
+                                    <option value="Educação">Educação</option>
+                                    <option value="Lazer">Lazer</option>
+                                    <option value="Juros">Juros</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tipo de Despesa</label>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="expense-type-fixed" name="expense-type" value="fixed" checked>
+                                        <label for="expense-type-fixed">Fixa</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="expense-type-occasional" name="expense-type" value="occasional">
+                                        <label for="expense-type-occasional">Eventual</label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-group" id="expense-date-group" style="display: none;">
-                            <label for="expense-date">Data da Despesa</label>
-                            <input type="date" id="expense-date">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="expense-file">Anexar Arquivo (opcional)</label>
-                            <input type="file" id="expense-file" accept="image/*,.pdf,.doc,.docx">
-                        </div>
-                        
-                        <button type="submit">Adicionar Despesa</button>
-                    </form>
+                            
+                            <div class="form-group" id="expense-date-group" style="display: none;">
+                                <label for="expense-date">Data da Despesa</label>
+                                <input type="date" id="expense-date">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expense-file">Anexar Arquivo (opcional)</label>
+                                <input type="file" id="expense-file" accept="image/*,.pdf,.doc,.docx">
+                            </div>
+                            
+                            <button type="submit">Adicionar Despesa</button>
+                        </form>
+                    </div>
                 </div>
-                
-                <div class="card">
-                    <h2>💰 Adicionar Receita</h2>
-                    <form id="income-form">
-                        <div class="form-group">
-                            <label for="income-description">Descrição</label>
-                            <input type="text" id="income-description" placeholder="Ex: Aluguel recebido, Diária" required>
+            </div>
+            
+            <!-- Despesas Fixas (Recolhível) -->
+            <div class="collapsible-section">
+                <button class="collapsible-header collapsed" onclick="toggleCollapsible(this)">
+                    Despesas Fixas
+                </button>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <div id="fixed-expenses-list" class="expenses-list">
+                            <!-- As despesas fixas serão listadas aqui -->
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="income-amount">Valor (R$)</label>
-                            <input type="number" id="income-amount" placeholder="0,00" step="0.01" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Despesas Eventuais (Recolhível) -->
+            <div class="collapsible-section">
+                <button class="collapsible-header collapsed" onclick="toggleCollapsible(this)">
+                    Despesas Eventuais
+                </button>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <div id="occasional-expenses-list" class="expenses-list">
+                            <!-- As despesas eventuais serão listadas aqui -->
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="income-category">Categoria</label>
-                            <select id="income-category" required>
-                                <option value="">Selecione uma categoria</option>
-                                <option value="Salário">Salário</option>
-                                <option value="Aluguel">Aluguel</option>
-                                <option value="Diária">Diária</option>
-                                <option value="Freelance">Freelance</option>
-                                <option value="Investimentos">Investimentos</option>
-                                <option value="Outros">Outros</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Tipo de Receita</label>
-                            <div class="radio-group">
-                                <div class="radio-option">
-                                    <input type="radio" id="income-type-fixed" name="income-type" value="fixed" checked>
-                                    <label for="income-type-fixed">Fixa</label>
-                                </div>
-                                <div class="radio-option">
-                                    <input type="radio" id="income-type-occasional" name="income-type" value="occasional">
-                                    <label for="income-type-occasional">Eventual</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Seção Adicionar Receita (Recolhível) -->
+            <div class="collapsible-section">
+                <button class="collapsible-header success collapsed" onclick="toggleCollapsible(this)">
+                    💰 Adicionar Receita
+                </button>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <form id="income-form">
+                            <div class="form-group">
+                                <label for="income-description">Descrição</label>
+                                <input type="text" id="income-description" placeholder="Ex: Aluguel recebido, Diária" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="income-amount">Valor (R$)</label>
+                                <input type="number" id="income-amount" placeholder="0,00" step="0.01" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="income-category">Categoria</label>
+                                <select id="income-category" required>
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="Salário">Salário</option>
+                                    <option value="Aluguel">Aluguel</option>
+                                    <option value="Diária">Diária</option>
+                                    <option value="Freelance">Freelance</option>
+                                    <option value="Investimentos">Investimentos</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Tipo de Receita</label>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="income-type-fixed" name="income-type" value="fixed" checked>
+                                        <label for="income-type-fixed">Fixa</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="income-type-occasional" name="income-type" value="occasional">
+                                        <label for="income-type-occasional">Eventual</label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="income-date">Data</label>
-                            <input type="date" id="income-date" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="income-file">Anexar Arquivo (opcional)</label>
-                            <input type="file" id="income-file" accept="image/*,.pdf,.doc,.docx">
-                        </div>
-                        
-                        <button type="submit" class="btn-success">Adicionar Receita</button>
-                    </form>
-                </div>
-                
-                <div class="card">
-                    <h3>📊 Receitas Fixas</h3>
-                    <p style="color: #666; margin-bottom: 15px;">Receitas recorrentes mensais (salário, aluguel, etc.)</p>
-                    <div id="fixed-incomes-list" class="expenses-list">
-                        <p class="no-data">Nenhuma receita fixa registrada ainda.</p>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>💸 Receitas Eventuais</h3>
-                    <p style="color: #666; margin-bottom: 15px;">Receitas ocasionais (freelance, vendas, bônus, etc.)</p>
-                    <div id="occasional-incomes-list" class="expenses-list">
-                        <p class="no-data">Nenhuma receita eventual registrada ainda.</p>
+                            
+                            <div class="form-group">
+                                <label for="income-date">Data</label>
+                                <input type="date" id="income-date" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="income-file">Anexar Arquivo (opcional)</label>
+                                <input type="file" id="income-file" accept="image/*,.pdf,.doc,.docx">
+                            </div>
+                            
+                            <button type="submit" class="btn-success">Adicionar Receita</button>
+                        </form>
                     </div>
                 </div>
             </div>
             
-            <div class="chart-section">
-                <div class="card">
-                    <h2>Distribuição de Gastos por Categoria</h2>
-                    <div class="chart-container">
-                        <canvas id="expenses-chart"></canvas>
-                    </div>
-                    <div id="chart-legend" style="margin-top: 15px;"></div>
-                </div>
-                
-                <div class="card">
-                    <h2>Resumo por Categoria</h2>
-                    <div id="category-summary" class="category-summary">
-                        <!-- As categorias serão preenchidas dinamicamente -->
+            <!-- Receitas Fixas (Recolhível) -->
+            <div class="collapsible-section">
+                <button class="collapsible-header success collapsed" onclick="toggleCollapsible(this)">
+                    📊 Receitas Fixas
+                </button>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <p style="color: #666; margin-bottom: 15px;">Receitas recorrentes mensais (salário, aluguel, etc.)</p>
+                        <div id="fixed-incomes-list" class="expenses-list">
+                            <p class="no-data">Nenhuma receita fixa registrada ainda.</p>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="form-section">
-                <div class="card">
-                    <h2>Despesas Fixas</h2>
-                    <div id="fixed-expenses-list" class="expenses-list">
-                        <!-- As despesas fixas serão listadas aqui -->
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h2>Despesas Eventuais</h2>
-                    <div id="occasional-expenses-list" class="expenses-list">
-                        <!-- As despesas eventuais serão listadas aqui -->
+            <!-- Receitas Eventuais (Recolhível) -->
+            <div class="collapsible-section">
+                <button class="collapsible-header success collapsed" onclick="toggleCollapsible(this)">
+                    💸 Receitas Eventuais
+                </button>
+                <div class="collapsible-content">
+                    <div class="card">
+                        <p style="color: #666; margin-bottom: 15px;">Receitas ocasionais (freelance, vendas, bônus, etc.)</p>
+                        <div id="occasional-incomes-list" class="expenses-list">
+                            <p class="no-data">Nenhuma receita eventual registrada ainda.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1148,7 +1292,10 @@
                     lastModified: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                console.log('💾 Salvando no Firebase:', monthKey, dataToSave);
+                console.log('💾 Salvando no Firebase:', monthKey);
+                console.log('📊 Despesas (total):', expenses.length);
+                console.log('💰 Receitas (total):', extraIncomes.length);
+                console.log('📋 Dados completos:', dataToSave);
                 
                 await userDocRef.doc(monthKey).set(dataToSave, { merge: true });
                 
@@ -1571,6 +1718,10 @@
                 // Salvar no Firebase
                 saveToFirebase();
                 
+                // Mostrar mensagem de sucesso
+                const tipoTexto = incomeType === 'fixed' ? 'fixa' : 'eventual';
+                alert(`✅ Receita ${tipoTexto} adicionada com sucesso!`);
+                
                 // Limpar o formulário
                 document.getElementById('income-form').reset();
                 document.getElementById('income-date').value = getTodayDate();
@@ -1984,10 +2135,15 @@
                 // Salvar no Firebase
                 saveToFirebase();
                 
+                // Mostrar mensagem de sucesso
+                const tipoTexto = expenseType === 'fixed' ? 'fixa' : 'eventual';
+                alert(`✅ Despesa ${tipoTexto} adicionada com sucesso!`);
+                
                 // Limpar formulário
                 expenseForm.reset();
                 if (fileInput) fileInput.value = '';
                 document.getElementById('expense-type-fixed').checked = true;
+                document.getElementById('expense-date-group').style.display = 'none';
             }
         }
 
@@ -3716,6 +3872,13 @@
             `;
             
             statsDiv.innerHTML = html;
+        }
+
+        // Função para alternar seções recolhíveis
+        function toggleCollapsible(button) {
+            button.classList.toggle('collapsed');
+            const content = button.nextElementSibling;
+            content.classList.toggle('expanded');
         }
 
         // Função de inicialização do app (chamada após login)
