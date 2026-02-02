@@ -1709,6 +1709,9 @@
                 
                 extraIncomes.push(income);
                 
+                console.log('➕ Receita adicionada:', income);
+                console.log('💰 Total de receitas agora:', extraIncomes.length);
+                
                 // Recalcular receita mensal total
                 calculateMonthlyIncome();
                 
@@ -1716,6 +1719,7 @@
                 updateBalance();
                 
                 // Salvar no Firebase
+                console.log('🔥 Chamando saveToFirebase...');
                 saveToFirebase();
                 
                 // Mostrar mensagem de sucesso
@@ -2125,6 +2129,9 @@
                 expenses.push(expense);
                 categories[category] += amount;
                 
+                console.log('➕ Despesa adicionada:', expense);
+                console.log('📊 Total de despesas agora:', expenses.length);
+                
                 updateExpensesList();
                 updateCategorySummary();
                 updateBalance();
@@ -2133,6 +2140,7 @@
                 saveDailyHistory();
                 
                 // Salvar no Firebase
+                console.log('🔥 Chamando saveToFirebase...');
                 saveToFirebase();
                 
                 // Mostrar mensagem de sucesso
@@ -2573,13 +2581,19 @@
             const balance = totalIncome - totalExpenses;
             
             // Atualizar displays
-            monthlyIncomeDisplay.textContent = formatCurrency(totalIncome);
+            monthlyIncomeDisplay.textContent = formatCurrency(totalFixedIncomes);
             fixedExpensesTotalDisplay.textContent = formatCurrency(totalFixedExpenses);
             currentBalanceDisplay.textContent = formatCurrency(balance);
             
             // Atualizar display de receitas eventuais
             if (occasionalIncomeTotalDisplay) {
                 occasionalIncomeTotalDisplay.textContent = formatCurrency(totalOccasionalIncomes);
+            }
+            
+            // Atualizar display de despesas eventuais
+            const monthOccasionalTotalDisplay = document.getElementById('month-occasional-total');
+            if (monthOccasionalTotalDisplay) {
+                monthOccasionalTotalDisplay.textContent = formatCurrency(totalOccasionalExpenses);
             }
             
             if (balance >= 0) {
