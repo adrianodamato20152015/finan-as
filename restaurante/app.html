@@ -417,12 +417,14 @@
         const tabs = {
             gerente: [
                 { id: 'financas', name: '💰 Finanças', icon: '💰' },
+                { id: 'cardapio', name: '📖 Cardápio', icon: '📖' },
                 { id: 'usuarios', name: '👥 Usuários', icon: '👥' },
                 { id: 'atendimento', name: '📋 Atendimento', icon: '📋' },
                 { id: 'cozinha', name: '🍳 Cozinha', icon: '🍳' },
                 { id: 'caixa', name: '💵 Caixa', icon: '💵' }
             ],
             atendimento: [
+                { id: 'cardapio', name: '📖 Cardápio', icon: '📖' },
                 { id: 'atendimento', name: '📋 Atendimento', icon: '📋' }
             ],
             cozinha: [
@@ -459,6 +461,9 @@
                     case 'financas':
                         contentEl.innerHTML = getFinancasContent();
                         break;
+                    case 'cardapio':
+                        contentEl.innerHTML = getCardapioContent();
+                        break;
                     case 'usuarios':
                         contentEl.innerHTML = getUsuariosContent();
                         break;
@@ -487,9 +492,11 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(`content-${tabId}`).classList.add('active');
             
-            // Se for a aba de finanças, carregar dados
+            // Carregar dados específicos de cada aba
             if (tabId === 'financas') {
                 setTimeout(() => carregarDadosFinanceiros(), 100);
+            } else if (tabId === 'cardapio') {
+                setTimeout(() => carregarCardapio(), 100);
             }
         }
 
@@ -1155,6 +1162,198 @@
             
             // Verificar se deve mostrar botão de importar fixas
             verificarBotaoImportar();
+        }
+
+        // Conteúdo da aba Cardápio
+        function getCardapioContent() {
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            const isGerente = userData.perfil === 'gerente';
+            
+            return `
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>📖 Cardápio</h2>
+                        ${isGerente ? '<button onclick="mostrarFormCardapio()" class="btn-primary">+ Adicionar Item</button>' : ''}
+                    </div>
+                    
+                    ${isGerente ? `
+                    <div id="form-cardapio" style="display: none; margin-bottom: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px; color: #495057;">Novo Item do Cardápio</h3>
+                        <div class="form-grid">
+                            <input type="text" id="cardapio-codigo" placeholder="Código (ex: P001)" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                            <input type="text" id="cardapio-item" placeholder="Nome do Item" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                            <input type="number" id="cardapio-valor" placeholder="Valor" step="0.01" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button onclick="salvarItemCardapio()" class="btn-primary">Salvar</button>
+                            <button onclick="cancelarFormCardapio()" class="btn-secondary" style="background: #6c757d; margin-left: 10px;">Cancelar</button>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div id="lista-cardapio" style="margin-top: 20px;">
+                        <p style="text-align: center; color: #999; padding: 40px;">Carregando cardápio...</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Funções do Cardápio
+        window.mostrarFormCardapio = () => {
+            const form = document.getElementById('form-cardapio');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            if (form.style.display === 'block') {
+                document.getElementById('cardapio-codigo').value = '';
+                document.getElementById('cardapio-item').value = '';
+                document.getElementById('cardapio-valor').value = '';
+                document.getElementById('cardapio-codigo').focus();
+            }
+        };
+
+        window.cancelarFormCardapio = () => {
+            document.getElementById('form-cardapio').style.display = 'none';
+        };
+
+        window.salvarItemCardapio = async () => {
+            const codigo = document.getElementById('cardapio-codigo').value.trim();
+            const item = document.getElementById('cardapio-item').value.trim();
+            const valor = parseFloat(document.getElementById('cardapio-valor').value);
+            
+            if (!codigo || !item || !valor) {
+                alert('⚠️ Preencha todos os campos!');
+                return;
+            }
+            
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            const cardapioRef = ref(database, `restaurantes/${userData.restauranteId}/cardapio`);
+            const newItemRef = push(cardapioRef);
+            
+            try {
+                await set(newItemRef, {
+                    codigo: codigo,
+                    item: item,
+                    valor: valor,
+                    timestamp: Date.now()
+                });
+                
+                alert('✅ Item adicionado ao cardápio!');
+                document.getElementById('form-cardapio').style.display = 'none';
+                carregarCardapio();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao salvar item!');
+            }
+        };
+
+        window.editarItemCardapio = async (id, codigo, item, valor) => {
+            const novoCodigo = prompt('Código:', codigo);
+            if (novoCodigo === null) return;
+            
+            const novoItem = prompt('Nome do Item:', item);
+            if (novoItem === null) return;
+            
+            const novoValor = prompt('Valor:', valor);
+            if (novoValor === null) return;
+            
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            const itemRef = ref(database, `restaurantes/${userData.restauranteId}/cardapio/${id}`);
+            
+            try {
+                await set(itemRef, {
+                    codigo: novoCodigo.trim(),
+                    item: novoItem.trim(),
+                    valor: parseFloat(novoValor),
+                    timestamp: Date.now()
+                });
+                
+                alert('✅ Item atualizado!');
+                carregarCardapio();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao atualizar item!');
+            }
+        };
+
+        window.excluirItemCardapio = async (id) => {
+            if (!confirm('Deseja excluir este item do cardápio?')) return;
+            
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            const itemRef = ref(database, `restaurantes/${userData.restauranteId}/cardapio/${id}`);
+            
+            try {
+                await remove(itemRef);
+                alert('✅ Item excluído!');
+                carregarCardapio();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao excluir item!');
+            }
+        };
+
+        async function carregarCardapio() {
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            const isGerente = userData.perfil === 'gerente';
+            const cardapioRef = ref(database, `restaurantes/${userData.restauranteId}/cardapio`);
+            
+            try {
+                const snapshot = await get(cardapioRef);
+                const listaCardapio = document.getElementById('lista-cardapio');
+                
+                if (!listaCardapio) return;
+                
+                if (snapshot.exists()) {
+                    const cardapio = snapshot.val();
+                    const itensArray = Object.entries(cardapio).sort((a, b) => {
+                        return a[1].codigo.localeCompare(b[1].codigo);
+                    });
+                    
+                    let html = `
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                    <th style="padding: 12px; text-align: left; font-weight: 600;">Código</th>
+                                    <th style="padding: 12px; text-align: left; font-weight: 600;">Item</th>
+                                    <th style="padding: 12px; text-align: right; font-weight: 600;">Valor</th>
+                                    ${isGerente ? '<th style="padding: 12px; text-align: center; font-weight: 600; width: 100px;">Ações</th>' : ''}
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    
+                    itensArray.forEach(([id, item]) => {
+                        html += `
+                            <tr style="border-bottom: 1px solid #dee2e6;">
+                                <td style="padding: 12px;"><strong>${item.codigo}</strong></td>
+                                <td style="padding: 12px;">${item.item}</td>
+                                <td style="padding: 12px; text-align: right; color: #28a745; font-weight: bold;">R$ ${item.valor.toFixed(2)}</td>
+                                ${isGerente ? `
+                                <td style="padding: 12px; text-align: center;">
+                                    <button onclick="editarItemCardapio('${id}', '${item.codigo}', '${item.item}', ${item.valor})" 
+                                            style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">✏️</button>
+                                    <button onclick="excluirItemCardapio('${id}')" 
+                                            style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🗑️</button>
+                                </td>
+                                ` : ''}
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                            </tbody>
+                        </table>
+                    `;
+                    
+                    listaCardapio.innerHTML = html;
+                } else {
+                    listaCardapio.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">📖 Nenhum item no cardápio ainda</p>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar cardápio:', error);
+                const listaCardapio = document.getElementById('lista-cardapio');
+                if (listaCardapio) {
+                    listaCardapio.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 40px;">❌ Erro ao carregar cardápio</p>';
+                }
+            }
         }
 
         // Conteúdo da aba Usuários (Gerente)

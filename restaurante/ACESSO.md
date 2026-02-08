@@ -44,6 +44,9 @@ https://sistema-restaurantes-b8ee9.web.app/index.html?rest=espetaria_do_chefe
 - Login com perfis de usuário
 - **Finanças**: Receitas e Despesas (fixas e eventuais)
 - **Importar Fixas**: Trazer receitas/despesas fixas do mês anterior
+- **Cardápio**: Gerenciar itens do cardápio (código, item, valor)
+  - **Gerente**: Adicionar, editar e excluir itens
+  - **Atendimento**: Visualizar cardápio (para criar pedidos)
 - **Usuários**: Gerente pode criar/editar usuários
 
 ### 🚧 Em Desenvolvimento:
