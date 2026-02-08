@@ -1,0 +1,24 @@
+name: Deploy Sistema Restaurante
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'restaurante/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy para Firebase Hosting
+        run: |
+          cd restaurante
+          firebase deploy --only hosting --project sistema-restaurantes-b8ee9 --token "${{ secrets.FIREBASE_TOKEN_RESTAURANTE }}"

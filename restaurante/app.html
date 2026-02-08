@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espetaria do Chefe - Sistema</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-small {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .logo-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-title h1 {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            padding: 0 20px;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .tab:hover {
+            background: #f8f8f8;
+            color: #8B4513;
+        }
+
+        .tab.active {
+            color: #8B4513;
+            border-bottom-color: #8B4513;
+        }
+
+        /* Content */
+        .content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #8B4513;
+            margin-bottom: 20px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Formulários */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        /* Tabela */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-gerente { background: #ffc107; color: #000; }
+        .badge-atendimento { background: #17a2b8; color: white; }
+        .badge-cozinha { background: #28a745; color: white; }
+        .badge-caixa { background: #6f42c1; color: white; }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .tabs {
+                padding: 0 10px;
+            }
+
+            .tab {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-small">
+                <img src="espetaria do chefe/images.png" alt="Logo" onerror="this.parentElement.innerHTML='🍖'">
+            </div>
+            <div class="header-title">
+                <h1>Espetaria do Chefe</h1>
+                <p id="userGreeting">Bem-vindo!</p>
+            </div>
+        </div>
+        <div class="user-info">
+            <div class="user-badge" id="userBadge">👤 Usuário</div>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <div class="tabs" id="tabsMenu">
+            <!-- Tabs serão adicionadas dinamicamente baseado no perfil -->
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="mainContent">
+        <!-- Conteúdo será adicionado dinamicamente -->
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get, set, push, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDg6tZdEH3FWKaj4a1ZV0TzhhSO_EizLpU",
+            authDomain: "sistema-restaurantes-b8ee9.firebaseapp.com",
+            databaseURL: "https://sistema-restaurantes-b8ee9-default-rtdb.firebaseio.com",
+            projectId: "sistema-restaurantes-b8ee9",
+            storageBucket: "sistema-restaurantes-b8ee9.firebasestorage.app",
+            messagingSenderId: "872858152148",
+            appId: "1:872858152148:web:b190e2bb588fc96f9f1f41"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Verificar autenticação
+        const userData = JSON.parse(sessionStorage.getItem('user'));
+        if (!userData) {
+            window.location.href = 'index.html';
+        }
+
+        // Carregar configurações do restaurante e personalizar interface
+        async function carregarConfigRestaurante() {
+            try {
+                const configRef = ref(database, `restaurantes/${userData.restauranteId}/config`);
+                const snapshot = await get(configRef);
+                
+                if (snapshot.exists()) {
+                    const config = snapshot.val();
+                    
+                    // Atualizar logo e título
+                    if (config.logo) {
+                        document.querySelector('.logo-small').textContent = config.logo;
+                    }
+                    if (config.nome) {
+                        document.querySelector('.header-title h1').textContent = config.nome;
+                        document.title = config.nome + ' - Sistema';
+                    }
+                    
+                    // Atualizar cores da interface
+                    if (config.corPrimaria && config.corSecundaria) {
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            .header {
+                                background: linear-gradient(135deg, ${config.corPrimaria} 0%, ${config.corSecundaria} 100%);
+                            }
+                            .tab.active {
+                                color: ${config.corPrimaria};
+                                border-bottom-color: ${config.corPrimaria};
+                            }
+                            .tab:hover {
+                                color: ${config.corPrimaria};
+                            }
+                            .card h2 {
+                                color: ${config.corPrimaria};
+                            }
+                            .btn-primary {
+                                background: linear-gradient(135deg, ${config.corPrimaria} 0%, ${config.corSecundaria} 100%);
+                            }
+                            .form-group input:focus,
+                            .form-group select:focus,
+                            .form-group textarea:focus {
+                                border-color: ${config.corPrimaria};
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    console.log('✅ Tema do restaurante aplicado');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar configuração:', error);
+            }
+        }
+
+        // Carregar configurações
+        carregarConfigRestaurante();
+
+        // Atualizar informações do usuário
+        document.getElementById('userGreeting').textContent = `Olá, ${userData.nome}!`;
+        document.getElementById('userBadge').textContent = `${userData.perfil.toUpperCase()}`;
+
+        // Definir abas baseado no perfil
+        const tabs = {
+            gerente: [
+                { id: 'financas', name: '💰 Finanças', icon: '💰' },
+                { id: 'usuarios', name: '👥 Usuários', icon: '👥' },
+                { id: 'atendimento', name: '📋 Atendimento', icon: '📋' },
+                { id: 'cozinha', name: '🍳 Cozinha', icon: '🍳' },
+                { id: 'caixa', name: '💵 Caixa', icon: '💵' }
+            ],
+            atendimento: [
+                { id: 'atendimento', name: '📋 Atendimento', icon: '📋' }
+            ],
+            cozinha: [
+                { id: 'cozinha', name: '🍳 Cozinha', icon: '🍳' }
+            ],
+            caixa: [
+                { id: 'caixa', name: '💰 Caixa', icon: '💰' }
+            ]
+        };
+
+        const userTabs = tabs[userData.perfil] || [];
+        const tabsMenu = document.getElementById('tabsMenu');
+        const mainContent = document.getElementById('mainContent');
+
+        // Criar tabs
+        userTabs.forEach((tab, index) => {
+            const tabEl = document.createElement('div');
+            tabEl.className = 'tab' + (index === 0 ? ' active' : '');
+            tabEl.textContent = tab.name;
+            tabEl.onclick = () => switchTab(tab.id);
+            tabsMenu.appendChild(tabEl);
+        });
+
+        // Criar conteúdo das tabs
+        function createTabContent() {
+            mainContent.innerHTML = '';
+            
+            userTabs.forEach((tab, index) => {
+                const contentEl = document.createElement('div');
+                contentEl.className = 'tab-content' + (index === 0 ? ' active' : '');
+                contentEl.id = `content-${tab.id}`;
+                
+                switch(tab.id) {
+                    case 'financas':
+                        contentEl.innerHTML = getFinancasContent();
+                        break;
+                    case 'usuarios':
+                        contentEl.innerHTML = getUsuariosContent();
+                        break;
+                    case 'atendimento':
+                        contentEl.innerHTML = getAtendimentoContent();
+                        break;
+                    case 'cozinha':
+                        contentEl.innerHTML = getCozinhaContent();
+                        break;
+                    case 'caixa':
+                        contentEl.innerHTML = getCaixaContent();
+                        break;
+                }
+                
+                mainContent.appendChild(contentEl);
+            });
+        }
+
+        // Alternar entre tabs
+        function switchTab(tabId) {
+            // Atualizar tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Atualizar conteúdo
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`content-${tabId}`).classList.add('active');
+            
+            // Se for a aba de finanças, carregar dados
+            if (tabId === 'financas') {
+                setTimeout(() => carregarDadosFinanceiros(), 100);
+            }
+        }
+
+        window.switchTab = switchTab;
+
+        // Conteúdo da aba Finanças (Gerente)
+        function getFinancasContent() {
+            const now = new Date();
+            const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+            const currentYear = now.getFullYear();
+            
+            return `
+                <style>
+                    .balance-card {
+                        text-align: center;
+                        border-left: 5px solid #3498db;
+                        padding: 25px;
+                    }
+                    .balance {
+                        font-size: 2.5rem;
+                        font-weight: bold;
+                        margin: 10px 0;
+                    }
+                    .positive { color: #2ecc71; }
+                    .negative { color: #e74c3c; }
+                    .accordion-card {
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    }
+                    .accordion-content {
+                        max-height: 0;
+                        overflow: hidden;
+                        transition: max-height 0.3s ease-out;
+                    }
+                    .accordion-content.open {
+                        max-height: 2000px;
+                        transition: max-height 0.5s ease-in;
+                    }
+                    .arrow {
+                        transition: transform 0.3s;
+                        font-size: 1.2rem;
+                    }
+                    .arrow.rotate {
+                        transform: rotate(180deg);
+                    }
+                    .item-list {
+                        margin-top: 15px;
+                    }
+                    .item {
+                        background: #f8f9fa;
+                        padding: 12px;
+                        margin-bottom: 8px;
+                        border-radius: 8px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .item-info {
+                        flex: 1;
+                    }
+                    .item-value {
+                        font-weight: bold;
+                        font-size: 1.1rem;
+                        margin-right: 10px;
+                    }
+                    .btn-delete {
+                        background: #dc3545;
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-size: 0.9rem;
+                    }
+                    
+                    /* Grid responsivo para formulários */
+                    .form-grid {
+                        display: grid;
+                        grid-template-columns: 2fr 1fr 1fr;
+                        gap: 10px;
+                    }
+                    
+                    .finance-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 20px;
+                        flex-wrap: wrap;
+                        gap: 15px;
+                    }
+                    
+                    .finance-controls {
+                        display: flex;
+                        gap: 10px;
+                        flex-wrap: wrap;
+                    }
+                    
+                    /* Responsividade Mobile */
+                    @media (max-width: 768px) {
+                        .form-grid {
+                            grid-template-columns: 1fr;
+                        }
+                        
+                        .balance {
+                            font-size: 2rem;
+                        }
+                        
+                        .finance-header {
+                            flex-direction: column;
+                            align-items: flex-start;
+                        }
+                        
+                        .finance-controls {
+                            width: 100%;
+                        }
+                        
+                        .finance-controls select,
+                        .finance-controls button {
+                            flex: 1;
+                            min-width: 120px;
+                        }
+                        
+                        .item {
+                            flex-direction: column;
+                            align-items: flex-start;
+                            gap: 10px;
+                        }
+                        
+                        .item > div:last-child {
+                            width: 100%;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+                    }
+                </style>
+                
+                <div class="card">
+                    <div class="finance-header">
+                        <h2>💰 Controle Financeiro</h2>
+                        <div class="finance-controls">
+                            <select id="mes-selector" style="padding: 8px; border-radius: 5px; border: 2px solid #e9ecef;">
+                                <option value="01" ${currentMonth === '01' ? 'selected' : ''}>Janeiro</option>
+                                <option value="02" ${currentMonth === '02' ? 'selected' : ''}>Fevereiro</option>
+                                <option value="03" ${currentMonth === '03' ? 'selected' : ''}>Março</option>
+                                <option value="04" ${currentMonth === '04' ? 'selected' : ''}>Abril</option>
+                                <option value="05" ${currentMonth === '05' ? 'selected' : ''}>Maio</option>
+                                <option value="06" ${currentMonth === '06' ? 'selected' : ''}>Junho</option>
+                                <option value="07" ${currentMonth === '07' ? 'selected' : ''}>Julho</option>
+                                <option value="08" ${currentMonth === '08' ? 'selected' : ''}>Agosto</option>
+                                <option value="09" ${currentMonth === '09' ? 'selected' : ''}>Setembro</option>
+                                <option value="10" ${currentMonth === '10' ? 'selected' : ''}>Outubro</option>
+                                <option value="11" ${currentMonth === '11' ? 'selected' : ''}>Novembro</option>
+                                <option value="12" ${currentMonth === '12' ? 'selected' : ''}>Dezembro</option>
+                            </select>
+                            <select id="ano-selector" style="padding: 8px; border-radius: 5px; border: 2px solid #e9ecef;">
+                                ${generateYearOptions()}
+                            </select>
+                            <button onclick="carregarMesFinanceiro()" class="btn-primary">Carregar</button>
+                            <button id="btn-importar-fixas" onclick="importarFixas()" class="btn-primary" style="background: #9b59b6; display: none;">📥 Importar Fixas</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Saldo Geral -->
+                    <div class="card balance-card">
+                        <h3 style="margin-bottom: 10px; color: #3498db;">📊 Saldo do Mês</h3>
+                        <div class="balance" id="saldo-geral">R$ 0,00</div>
+                        <p style="font-size: 0.9rem; color: #666;">Receitas - Despesas</p>
+                    </div>
+
+                    <!-- Card de Receitas -->
+                    <div class="card accordion-card" style="border-left: 5px solid #2ecc71; margin-top: 20px;" onclick="toggleFinanceAccordion('receitas')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="margin: 0; color: #2ecc71; font-size: 1.4rem;">💵 Receitas</h3>
+                                <span style="font-size: 0.85rem; color: #666;">Vendas e outras entradas</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="balance positive" id="total-receitas" style="margin: 0;">R$ 0,00</div>
+                                <div class="arrow" id="arrow-receitas">▼</div>
+                            </div>
+                        </div>
+                        
+                        <div id="content-receitas" class="accordion-content">
+                            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                                <button onclick="mostrarFormReceita(); event.stopPropagation();" class="btn-primary">+ Adicionar Receita</button>
+                                
+                                <div id="form-receita" onclick="event.stopPropagation();" style="display: none; margin-top: 15px; background: #f0fff4; padding: 15px; border-radius: 8px;">
+                                    <h4 style="color: #2ecc71; margin-bottom: 15px;">Nova Receita</h4>
+                                    <div class="form-grid">
+                                        <input type="text" id="receita-descricao" placeholder="Descrição" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                                        <input type="number" id="receita-valor" placeholder="Valor" step="0.01" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                                        <input type="date" id="receita-data" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px; display: block;">Tipo de Receita:</label>
+                                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                                <input type="radio" name="tipo-receita" value="fixed" checked>
+                                                <span style="font-size: 14px;">💰 Fixa</span>
+                                            </label>
+                                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                                <input type="radio" name="tipo-receita" value="occasional">
+                                                <span style="font-size: 14px;">💵 Eventual</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <button onclick="salvarReceita(); event.stopPropagation();" class="btn-primary">Salvar</button>
+                                        <button onclick="document.getElementById('form-receita').style.display='none'; event.stopPropagation();" class="btn-secondary" style="background: #6c757d;">Cancelar</button>
+                                    </div>
+                                </div>
+                                
+                                <div id="lista-receitas" class="item-list" onclick="event.stopPropagation();"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Despesas -->
+                    <div class="card accordion-card" style="border-left: 5px solid #e74c3c; margin-top: 20px;" onclick="toggleFinanceAccordion('despesas')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="margin: 0; color: #e74c3c; font-size: 1.4rem;">💸 Despesas</h3>
+                                <span style="font-size: 0.85rem; color: #666;">Gastos e pagamentos</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="balance negative" id="total-despesas" style="margin: 0;">R$ 0,00</div>
+                                <div class="arrow" id="arrow-despesas">▼</div>
+                            </div>
+                        </div>
+                        
+                        <div id="content-despesas" class="accordion-content">
+                            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+                                <button onclick="mostrarFormDespesa(); event.stopPropagation();" class="btn-primary" style="background: #e74c3c;">+ Adicionar Despesa</button>
+                                
+                                <div id="form-despesa" onclick="event.stopPropagation();" style="display: none; margin-top: 15px; background: #fff0f0; padding: 15px; border-radius: 8px;">
+                                    <h4 style="color: #e74c3c; margin-bottom: 15px;">Nova Despesa</h4>
+                                    <div class="form-grid">
+                                        <input type="text" id="despesa-descricao" placeholder="Descrição" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                                        <input type="number" id="despesa-valor" placeholder="Valor" step="0.01" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                                        <input type="date" id="despesa-data" style="padding: 10px; border: 2px solid #ddd; border-radius: 5px;">
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px; display: block;">Tipo de Despesa:</label>
+                                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                                <input type="radio" name="tipo-despesa" value="fixed" checked>
+                                                <span style="font-size: 14px;">📌 Fixa</span>
+                                            </label>
+                                            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                                <input type="radio" name="tipo-despesa" value="occasional">
+                                                <span style="font-size: 14px;">💸 Eventual</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        <button onclick="salvarDespesa(); event.stopPropagation();" class="btn-primary" style="background: #e74c3c;">Salvar</button>
+                                        <button onclick="document.getElementById('form-despesa').style.display='none'; event.stopPropagation();" class="btn-secondary" style="background: #6c757d;">Cancelar</button>
+                                    </div>
+                                </div>
+                                
+                                <div id="lista-despesas" class="item-list" onclick="event.stopPropagation();"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Funções auxiliares para Finanças
+        function generateYearOptions() {
+            const currentYear = new Date().getFullYear();
+            let options = '';
+            for (let year = currentYear - 2; year <= currentYear + 2; year++) {
+                options += `<option value="${year}" ${year === currentYear ? 'selected' : ''}>${year}</option>`;
+            }
+            return options;
+        }
+
+        window.toggleFinanceAccordion = (type) => {
+            const content = document.getElementById(`content-${type}`);
+            const arrow = document.getElementById(`arrow-${type}`);
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                arrow.classList.remove('rotate');
+            } else {
+                content.classList.add('open');
+                arrow.classList.add('rotate');
+            }
+        };
+
+        window.mostrarFormReceita = () => {
+            const form = document.getElementById('form-receita');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            // Definir data atual
+            document.getElementById('receita-data').valueAsDate = new Date();
+        };
+
+        window.mostrarFormDespesa = () => {
+            const form = document.getElementById('form-despesa');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            // Definir data atual
+            document.getElementById('despesa-data').valueAsDate = new Date();
+        };
+
+        window.salvarReceita = async () => {
+            const descricao = document.getElementById('receita-descricao').value;
+            const valor = parseFloat(document.getElementById('receita-valor').value);
+            const data = document.getElementById('receita-data').value;
+            const tipo = document.querySelector('input[name="tipo-receita"]:checked').value;
+            
+            if (!descricao || !valor || !data) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            const mes = data.substring(5, 7);
+            const ano = data.substring(0, 4);
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            
+            const receitaRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${ano}/${mes}/receitas`);
+            const newReceitaRef = push(receitaRef);
+            
+            try {
+                await set(newReceitaRef, {
+                    descricao: descricao,
+                    valor: valor,
+                    data: data,
+                    tipo: tipo,
+                    timestamp: Date.now()
+                });
+                
+                alert('✅ Receita adicionada!');
+                document.getElementById('form-receita').style.display = 'none';
+                document.getElementById('receita-descricao').value = '';
+                document.getElementById('receita-valor').value = '';
+                carregarDadosFinanceiros();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao salvar receita!');
+            }
+        };
+
+        window.salvarDespesa = async () => {
+            const descricao = document.getElementById('despesa-descricao').value;
+            const valor = parseFloat(document.getElementById('despesa-valor').value);
+            const data = document.getElementById('despesa-data').value;
+            const tipo = document.querySelector('input[name="tipo-despesa"]:checked').value;
+            
+            if (!descricao || !valor || !data) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            const mes = data.substring(5, 7);
+            const ano = data.substring(0, 4);
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            
+            const despesaRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${ano}/${mes}/despesas`);
+            const newDespesaRef = push(despesaRef);
+            
+            try {
+                await set(newDespesaRef, {
+                    descricao: descricao,
+                    valor: valor,
+                    data: data,
+                    tipo: tipo,
+                    timestamp: Date.now()
+                });
+                
+                alert('✅ Despesa adicionada!');
+                document.getElementById('form-despesa').style.display = 'none';
+                document.getElementById('despesa-descricao').value = '';
+                document.getElementById('despesa-valor').value = '';
+                carregarDadosFinanceiros();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao salvar despesa!');
+            }
+        };
+
+        window.carregarMesFinanceiro = () => {
+            carregarDadosFinanceiros();
+            verificarBotaoImportar();
+        };
+
+        // Verifica se deve mostrar o botão de importar fixas
+        function verificarBotaoImportar() {
+            const mesAtual = String(new Date().getMonth() + 1).padStart(2, '0');
+            const anoAtual = String(new Date().getFullYear());
+            const mesSelecionado = document.getElementById('mes-selector').value;
+            const anoSelecionado = document.getElementById('ano-selector').value;
+            
+            const btnImportar = document.getElementById('btn-importar-fixas');
+            
+            // Mostra botão apenas se não for o mês atual
+            if (mesSelecionado !== mesAtual || anoSelecionado !== anoAtual) {
+                btnImportar.style.display = 'inline-block';
+            } else {
+                btnImportar.style.display = 'none';
+            }
+        }
+
+        // Calcula o mês anterior
+        function calcularMesAnterior(mes, ano) {
+            let mesAnterior = parseInt(mes) - 1;
+            let anoAnterior = parseInt(ano);
+            
+            if (mesAnterior === 0) {
+                mesAnterior = 12;
+                anoAnterior--;
+            }
+            
+            return {
+                mes: String(mesAnterior).padStart(2, '0'),
+                ano: String(anoAnterior)
+            };
+        }
+
+        // Importar despesas e receitas fixas do mês anterior
+        window.importarFixas = async () => {
+            const mesSelecionado = document.getElementById('mes-selector').value;
+            const anoSelecionado = document.getElementById('ano-selector').value;
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            
+            const anterior = calcularMesAnterior(mesSelecionado, anoSelecionado);
+            
+            const nomesMeses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                              'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            const mesAnteriorNome = nomesMeses[parseInt(anterior.mes)];
+            
+            if (!confirm(`Deseja importar as despesas e receitas FIXAS de ${mesAnteriorNome}/${anterior.ano}?`)) {
+                return;
+            }
+            
+            try {
+                let receitasImportadas = 0;
+                let despesasImportadas = 0;
+                
+                // Importar receitas fixas
+                const receitasRefAnterior = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${anterior.ano}/${anterior.mes}/receitas`);
+                const receitasSnapshot = await get(receitasRefAnterior);
+                
+                if (receitasSnapshot.exists()) {
+                    const receitas = receitasSnapshot.val();
+                    const receitasRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${anoSelecionado}/${mesSelecionado}/receitas`);
+                    
+                    for (let [id, receita] of Object.entries(receitas)) {
+                        if (receita.tipo === 'fixed') {
+                            const newReceitaRef = push(receitasRef);
+                            await set(newReceitaRef, {
+                                descricao: receita.descricao,
+                                valor: receita.valor,
+                                data: `${anoSelecionado}-${mesSelecionado}-01`,
+                                tipo: 'fixed',
+                                timestamp: Date.now()
+                            });
+                            receitasImportadas++;
+                        }
+                    }
+                }
+                
+                // Importar despesas fixas
+                const despesasRefAnterior = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${anterior.ano}/${anterior.mes}/despesas`);
+                const despesasSnapshot = await get(despesasRefAnterior);
+                
+                if (despesasSnapshot.exists()) {
+                    const despesas = despesasSnapshot.val();
+                    const despesasRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${anoSelecionado}/${mesSelecionado}/despesas`);
+                    
+                    for (let [id, despesa] of Object.entries(despesas)) {
+                        if (despesa.tipo === 'fixed') {
+                            const newDespesaRef = push(despesasRef);
+                            await set(newDespesaRef, {
+                                descricao: despesa.descricao,
+                                valor: despesa.valor,
+                                data: `${anoSelecionado}-${mesSelecionado}-01`,
+                                tipo: 'fixed',
+                                timestamp: Date.now()
+                            });
+                            despesasImportadas++;
+                        }
+                    }
+                }
+                
+                alert(`✅ Importação concluída!\n\n📥 ${receitasImportadas} receitas fixas\n📥 ${despesasImportadas} despesas fixas`);
+                carregarDadosFinanceiros();
+                
+            } catch (error) {
+                console.error('Erro ao importar:', error);
+                alert('❌ Erro ao importar dados fixos!');
+            }
+        };
+
+        window.excluirReceita = async (id) => {
+            if (!confirm('Deseja excluir esta receita?')) return;
+            
+            const mes = document.getElementById('mes-selector').value;
+            const ano = document.getElementById('ano-selector').value;
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            
+            const receitaRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${ano}/${mes}/receitas/${id}`);
+            
+            try {
+                await remove(receitaRef);
+                alert('✅ Receita excluída!');
+                carregarDadosFinanceiros();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao excluir receita!');
+            }
+        };
+
+        window.excluirDespesa = async (id) => {
+            if (!confirm('Deseja excluir esta despesa?')) return;
+            
+            const mes = document.getElementById('mes-selector').value;
+            const ano = document.getElementById('ano-selector').value;
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            
+            const despesaRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${ano}/${mes}/despesas/${id}`);
+            
+            try {
+                await remove(despesaRef);
+                alert('✅ Despesa excluída!');
+                carregarDadosFinanceiros();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro ao excluir despesa!');
+            }
+        };
+
+        async function carregarDadosFinanceiros() {
+            const mes = document.getElementById('mes-selector')?.value || String(new Date().getMonth() + 1).padStart(2, '0');
+            const ano = document.getElementById('ano-selector')?.value || String(new Date().getFullYear());
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            
+            // Carregar receitas
+            const receitasRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${ano}/${mes}/receitas`);
+            const receitasSnapshot = await get(receitasRef);
+            
+            let totalReceitas = 0;
+            let receitasFixas = 0;
+            let receitasEventuais = 0;
+            const listaReceitas = document.getElementById('lista-receitas');
+            if (listaReceitas) {
+                listaReceitas.innerHTML = '';
+                
+                if (receitasSnapshot.exists()) {
+                    const receitas = receitasSnapshot.val();
+                    const receitasArray = Object.entries(receitas).sort((a, b) => {
+                        // Ordenar por tipo (fixas primeiro) e depois por data
+                        if (a[1].tipo !== b[1].tipo) {
+                            return a[1].tipo === 'fixed' ? -1 : 1;
+                        }
+                        return new Date(a[1].data) - new Date(b[1].data);
+                    });
+                    
+                    receitasArray.forEach(([id, receita]) => {
+                        totalReceitas += receita.valor;
+                        if (receita.tipo === 'fixed') {
+                            receitasFixas += receita.valor;
+                        } else {
+                            receitasEventuais += receita.valor;
+                        }
+                        
+                        const tipoIcon = receita.tipo === 'fixed' ? '💰' : '💵';
+                        const tipoLabel = receita.tipo === 'fixed' ? 'Fixa' : 'Eventual';
+                        
+                        listaReceitas.innerHTML += `
+                            <div class="item" onclick="event.stopPropagation();">
+                                <div class="item-info">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <strong>${receita.descricao}</strong>
+                                        <span style="font-size: 11px; background: ${receita.tipo === 'fixed' ? '#d4edda' : '#fff3cd'}; color: ${receita.tipo === 'fixed' ? '#155724' : '#856404'}; padding: 2px 8px; border-radius: 10px;">${tipoIcon} ${tipoLabel}</span>
+                                    </div>
+                                    <small style="color: #666;">${new Date(receita.data).toLocaleDateString('pt-BR')}</small>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="item-value positive">+R$ ${receita.valor.toFixed(2)}</span>
+                                    <button class="btn-delete" onclick="excluirReceita('${id}'); event.stopPropagation();">🗑️</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    listaReceitas.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhuma receita registrada</p>';
+                }
+            }
+            
+            // Carregar despesas
+            const despesasRef = ref(database, `restaurantes/${userData.restauranteId}/financeiro/${ano}/${mes}/despesas`);
+            const despesasSnapshot = await get(despesasRef);
+            
+            let totalDespesas = 0;
+            let despesasFixas = 0;
+            let despesasEventuais = 0;
+            const listaDespesas = document.getElementById('lista-despesas');
+            if (listaDespesas) {
+                listaDespesas.innerHTML = '';
+                
+                if (despesasSnapshot.exists()) {
+                    const despesas = despesasSnapshot.val();
+                    const despesasArray = Object.entries(despesas).sort((a, b) => {
+                        // Ordenar por tipo (fixas primeiro) e depois por data
+                        if (a[1].tipo !== b[1].tipo) {
+                            return a[1].tipo === 'fixed' ? -1 : 1;
+                        }
+                        return new Date(a[1].data) - new Date(b[1].data);
+                    });
+                    
+                    despesasArray.forEach(([id, despesa]) => {
+                        totalDespesas += despesa.valor;
+                        if (despesa.tipo === 'fixed') {
+                            despesasFixas += despesa.valor;
+                        } else {
+                            despesasEventuais += despesa.valor;
+                        }
+                        
+                        const tipoIcon = despesa.tipo === 'fixed' ? '📌' : '💸';
+                        const tipoLabel = despesa.tipo === 'fixed' ? 'Fixa' : 'Eventual';
+                        
+                        listaDespesas.innerHTML += `
+                            <div class="item" onclick="event.stopPropagation();">
+                                <div class="item-info">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <strong>${despesa.descricao}</strong>
+                                        <span style="font-size: 11px; background: ${despesa.tipo === 'fixed' ? '#f8d7da' : '#fff3cd'}; color: ${despesa.tipo === 'fixed' ? '#721c24' : '#856404'}; padding: 2px 8px; border-radius: 10px;">${tipoIcon} ${tipoLabel}</span>
+                                    </div>
+                                    <small style="color: #666;">${new Date(despesa.data).toLocaleDateString('pt-BR')}</small>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="item-value negative">-R$ ${despesa.valor.toFixed(2)}</span>
+                                    <button class="btn-delete" onclick="excluirDespesa('${id}'); event.stopPropagation();">🗑️</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    listaDespesas.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhuma despesa registrada</p>';
+                }
+            }
+            
+            // Atualizar totais
+            const saldo = totalReceitas - totalDespesas;
+            const saldoEl = document.getElementById('saldo-geral');
+            const totalReceitasEl = document.getElementById('total-receitas');
+            const totalDespesasEl = document.getElementById('total-despesas');
+            
+            if (saldoEl) {
+                saldoEl.textContent = `R$ ${Math.abs(saldo).toFixed(2)}`;
+                saldoEl.className = 'balance ' + (saldo >= 0 ? 'positive' : 'negative');
+            }
+            if (totalReceitasEl) totalReceitasEl.textContent = `R$ ${totalReceitas.toFixed(2)}`;
+            if (totalDespesasEl) totalDespesasEl.textContent = `R$ ${totalDespesas.toFixed(2)}`;
+            
+            // Definir seletores para mês/ano atual
+            const mesSel = document.getElementById('mes-selector');
+            const anoSel = document.getElementById('ano-selector');
+            if (mesSel) mesSel.value = mes;
+            if (anoSel) anoSel.value = ano;
+            
+            // Verificar se deve mostrar botão de importar fixas
+            verificarBotaoImportar();
+        }
+
+        // Conteúdo da aba Usuários (Gerente)
+        function getUsuariosContent() {
+            return `
+                <div class="card">
+                    <h2>👥 Gerenciar Usuários</h2>
+                    
+                    <form id="formUsuario">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Nome Completo</label>
+                                <input type="text" id="nomeUsuario" placeholder="Ex: João Silva" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Nome de Usuário (login)</label>
+                                <input type="text" id="loginUsuario" placeholder="Ex: joao" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Perfil</label>
+                                <select id="perfilUsuario" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="gerente">Gerente</option>
+                                    <option value="atendimento">Atendimento</option>
+                                    <option value="cozinha">Cozinha</option>
+                                    <option value="caixa">Caixa</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Senha</label>
+                                <input type="password" id="senhaUsuario" placeholder="Senha inicial" required>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary">➕ Adicionar Usuário</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>📋 Usuários Cadastrados</h2>
+                    <div class="table-container">
+                        <table id="tabelaUsuarios">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Usuário</th>
+                                    <th>Perfil</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: #999;">Carregando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Conteúdo da aba Atendimento
+        function getAtendimentoContent() {
+            return `
+                <div class="card">
+                    <h2>📋 Atendimento</h2>
+                    <p>Em desenvolvimento: Sistema de pedidos e gestão de mesas.</p>
+                </div>
+            `;
+        }
+
+        // Conteúdo da aba Cozinha
+        function getCozinhaContent() {
+            return `
+                <div class="card">
+                    <h2>🍳 Cozinha</h2>
+                    <p>Em desenvolvimento: Visualização de pedidos para preparo.</p>
+                </div>
+            `;
+        }
+
+        // Conteúdo da aba Caixa
+        function getCaixaContent() {
+            return `
+                <div class="card">
+                    <h2>💰 Caixa</h2>
+                    <p>Em desenvolvimento: Fechamento de contas e relatórios.</p>
+                </div>
+            `;
+        }
+
+        // Inicializar conteúdo
+        createTabContent();
+
+        // Carregar dados financeiros se for gerente (primeira aba)
+        if (userData.perfil === 'gerente') {
+            setTimeout(() => carregarDadosFinanceiros(), 200);
+        }
+
+        // Carregar usuários (se for gerente)
+        if (userData.perfil === 'gerente') {
+            carregarUsuarios();
+            
+            // Form de adicionar usuário
+            setTimeout(() => {
+                document.getElementById('formUsuario').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const nome = document.getElementById('nomeUsuario').value;
+                    const login = document.getElementById('loginUsuario').value;
+                    const perfil = document.getElementById('perfilUsuario').value;
+                    const senha = document.getElementById('senhaUsuario').value;
+                    
+                    const userRef = ref(database, `restaurantes/${userData.restauranteId}/usuarios/${login}`);
+                    
+                    try {
+                        await set(userRef, {
+                            nome: nome,
+                            perfil: perfil,
+                            senha: senha
+                        });
+                        
+                        alert('✅ Usuário adicionado com sucesso!');
+                        e.target.reset();
+                        carregarUsuarios();
+                    } catch (error) {
+                        console.error('Erro:', error);
+                        alert('❌ Erro ao adicionar usuário!');
+                    }
+                });
+            }, 100);
+        }
+
+        // Função para carregar usuários
+        async function carregarUsuarios() {
+            const usuariosRef = ref(database, `restaurantes/${userData.restauranteId}/usuarios`);
+            const snapshot = await get(usuariosRef);
+            
+            const tbody = document.querySelector('#tabelaUsuarios tbody');
+            tbody.innerHTML = '';
+            
+            if (snapshot.exists()) {
+                const usuarios = snapshot.val();
+                Object.entries(usuarios).forEach(([login, data]) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${data.nome}</td>
+                        <td>${login}</td>
+                        <td><span class="badge badge-${data.perfil}">${data.perfil}</span></td>
+                        <td>
+                            <button class="btn-danger" onclick="excluirUsuario('${login}')">🗑️ Excluir</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">Nenhum usuário cadastrado</td></tr>';
+            }
+        }
+
+        // Função para excluir usuário
+        window.excluirUsuario = async (login) => {
+            if (confirm(`Tem certeza que deseja excluir o usuário "${login}"?`)) {
+                const userRef = ref(database, `restaurantes/${userData.restauranteId}/usuarios/${login}`);
+                try {
+                    await remove(userRef);
+                    alert('✅ Usuário excluído!');
+                    carregarUsuarios();
+                } catch (error) {
+                    console.error('Erro:', error);
+                    alert('❌ Erro ao excluir usuário!');
+                }
+            }
+        };
+
+        // Logout
+        window.logout = () => {
+            if (confirm('Deseja sair do sistema?')) {
+                sessionStorage.removeItem('user');
+                window.location.href = 'index.html';
+            }
+        };
+    </script>
+</body>
+</html>

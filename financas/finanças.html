@@ -684,46 +684,46 @@
         <div class="tab-content active" id="monthly-tab">
             <div class="dashboard">
                 <div class="card">
-                    <h2>Receitas Fixas</h2>
-                    <div class="balance positive" id="monthly-income">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #777; margin-top: 10px;">Total de receitas fixas mensais</p>
+                    <h2>💰 Receita Total</h2>
+                    <div class="balance positive" id="total-income-display">R$ 0,00</div>
+                    <p style="font-size: 0.9rem; color: #777; margin-top: 10px;">Receitas Fixas + Eventuais</p>
+                    <div style="font-size: 0.8rem; color: #999; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee;">
+                        <div>Fixas: <span id="fixed-income-detail">R$ 0,00</span></div>
+                        <div>Eventuais: <span id="occasional-income-detail">R$ 0,00</span></div>
+                    </div>
                 </div>
                 
                 <div class="card">
-                    <h2>Receitas Eventuais</h2>
-                    <div class="balance positive" id="occasional-income-total">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Receitas eventuais do mês</p>
+                    <h2>💸 Despesas Totais</h2>
+                    <div class="balance negative" id="total-expenses-display">R$ 0,00</div>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Despesas Fixas + Eventuais</p>
+                    <div style="font-size: 0.8rem; color: #999; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee;">
+                        <div>Fixas: <span id="fixed-expenses-detail">R$ 0,00</span></div>
+                        <div>Eventuais: <span id="occasional-expenses-detail">R$ 0,00</span></div>
+                    </div>
                 </div>
                 
                 <div class="card">
-                    <h2>Despesas Fixas</h2>
-                    <div class="balance negative" id="fixed-expenses-total">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Total de despesas fixas mensais</p>
-                </div>
-                
-                <div class="card">
-                    <h2>Despesas Eventuais</h2>
-                    <div class="balance negative" id="month-occasional-total">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Gastos eventuais acumulados no mês</p>
-                </div>
-                
-                <div class="card">
-                    <h2>Despesas do Dia</h2>
-                    <div class="balance negative" id="today-expenses">R$ 0,00</div>
-                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Despesas eventuais de hoje</p>
-                </div>
-                
-                <div class="card">
-                    <h2>Saldo Mensal</h2>
+                    <h2>📊 Saldo Geral</h2>
                     <div class="balance" id="current-balance">R$ 0,00</div>
                     <div id="balance-status"></div>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Receitas - Despesas</p>
+                </div>
+            </div>
+            
+            <!-- Card de Despesas do Dia -->
+            <div style="margin-bottom: 30px;">
+                <div class="card">
+                    <h2>💸 Despesas do Dia</h2>
+                    <div class="balance negative" id="today-expenses">R$ 0,00</div>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">Despesas eventuais de hoje</p>
                 </div>
             </div>
             
             <!-- Seção Adicionar Despesa (Recolhível) -->
             <div class="collapsible-section">
                 <button class="collapsible-header collapsed" onclick="toggleCollapsible(this)">
-                    Adicionar Despesa
+                    💸 Adicionar Despesa
                 </button>
                 <div class="collapsible-content">
                     <div class="card">
@@ -767,9 +767,9 @@
                                 </div>
                             </div>
                             
-                            <div class="form-group" id="expense-date-group" style="display: none;">
+                            <div class="form-group" id="expense-date-group">
                                 <label for="expense-date">Data da Despesa</label>
-                                <input type="date" id="expense-date">
+                                <input type="date" id="expense-date" required>
                             </div>
                             
                             <div class="form-group">
@@ -777,7 +777,7 @@
                                 <input type="file" id="expense-file" accept="image/*,.pdf,.doc,.docx">
                             </div>
                             
-                            <button type="submit">Adicionar Despesa</button>
+                            <button type="submit">💸 Adicionar Despesa</button>
                         </form>
                     </div>
                 </div>
@@ -786,7 +786,7 @@
             <!-- Despesas Fixas (Recolhível) -->
             <div class="collapsible-section">
                 <button class="collapsible-header collapsed" onclick="toggleCollapsible(this)">
-                    Despesas Fixas
+                    💸 Despesas Fixas
                 </button>
                 <div class="collapsible-content">
                     <div class="card">
@@ -800,7 +800,7 @@
             <!-- Despesas Eventuais (Recolhível) -->
             <div class="collapsible-section">
                 <button class="collapsible-header collapsed" onclick="toggleCollapsible(this)">
-                    Despesas Eventuais
+                    💸 Despesas Eventuais
                 </button>
                 <div class="collapsible-content">
                     <div class="card">
@@ -1033,11 +1033,11 @@
                 <!-- Gráficos -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                     <div class="card">
-                        <h3>Evolução Mensal de Despesas</h3>
+                        <h3>💸 Evolução Mensal de Despesas</h3>
                         <canvas id="monthly-expenses-chart" style="max-height: 300px;"></canvas>
                     </div>
                     <div class="card">
-                        <h3>Despesas por Categoria (Total)</h3>
+                        <h3>💸 Despesas por Categoria (Total)</h3>
                         <canvas id="category-total-chart" style="max-height: 300px;"></canvas>
                     </div>
                 </div>
@@ -1055,11 +1055,11 @@
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
                     <div class="card">
-                        <h3>Despesas por Dia da Semana</h3>
+                        <h3>💸 Despesas por Dia da Semana</h3>
                         <canvas id="weekday-chart" style="max-height: 300px;"></canvas>
                     </div>
                     <div class="card">
-                        <h3>Top 10 Maiores Despesas</h3>
+                        <h3>💸 Top 10 Maiores Despesas</h3>
                         <div id="top-expenses" style="max-height: 300px; overflow-y: auto;">
                             <!-- Será preenchido dinamicamente -->
                         </div>
@@ -1256,7 +1256,6 @@
                     // Atualizar a interface com os dados carregados
                     updateBalance();
                     updateExpensesList();
-                    updateConsignadosList();
                     updateIncomesList();
                 }
                 
@@ -1399,19 +1398,8 @@
         expenseForm.addEventListener('submit', addExpense);
         document.getElementById('income-form').addEventListener('submit', addExtraIncome);
         
-        // Mostrar/ocultar campo de data para despesas eventuais
-        document.querySelectorAll('input[name="expense-type"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const dateGroup = document.getElementById('expense-date-group');
-                if (this.value === 'occasional') {
-                    dateGroup.style.display = 'block';
-                    document.getElementById('expense-date').required = true;
-                } else {
-                    dateGroup.style.display = 'none';
-                    document.getElementById('expense-date').required = false;
-                }
-            });
-        });
+        // Campo de data sempre visível e pré-preenchido
+        // (Removido código que ocultava o campo para despesas fixas)
         
         // Tabs
         tabs.forEach(tab => {
@@ -2103,18 +2091,13 @@
                     return;
                 }
                 
-                // Usar data selecionada se for eventual, senão usa data atual
-                let expenseDate;
-                if (expenseType === 'occasional') {
-                    const dateInput = document.getElementById('expense-date').value;
-                    if (!dateInput) {
-                        alert('Por favor, selecione a data da despesa.');
-                        return;
-                    }
-                    expenseDate = dateInput;
-                } else {
-                    expenseDate = new Date().toISOString().split('T')[0];
+                // Sempre usar a data do campo
+                const dateInput = document.getElementById('expense-date').value;
+                if (!dateInput) {
+                    alert('Por favor, selecione a data da despesa.');
+                    return;
                 }
+                const expenseDate = dateInput;
                 
                 const expense = {
                     id: Date.now(),
@@ -2132,6 +2115,10 @@
                 console.log('➕ Despesa adicionada:', expense);
                 console.log('📊 Total de despesas agora:', expenses.length);
                 
+                // Mostrar mensagem de sucesso IMEDIATAMENTE
+                const tipoTexto = expenseType === 'fixed' ? 'fixa' : 'eventual';
+                alert(`✅ Despesa ${tipoTexto} de ${formatCurrency(amount)} adicionada com sucesso!`);
+                
                 updateExpensesList();
                 updateCategorySummary();
                 updateBalance();
@@ -2140,18 +2127,22 @@
                 saveDailyHistory();
                 
                 // Salvar no Firebase
-                console.log('🔥 Chamando saveToFirebase...');
-                saveToFirebase();
-                
-                // Mostrar mensagem de sucesso
-                const tipoTexto = expenseType === 'fixed' ? 'fixa' : 'eventual';
-                alert(`✅ Despesa ${tipoTexto} adicionada com sucesso!`);
+                console.log('🔥 Chamando saveToFirebase() após adicionar despesa...');
+                console.log('🔥 currentUser:', currentUser ? 'Autenticado' : 'NÃO AUTENTICADO!');
+                console.log('🔥 Total de despesas antes de salvar:', expenses.length);
+                saveToFirebase().then(() => {
+                    console.log('✅ Dados sincronizados com a nuvem!');
+                }).catch((error) => {
+                    console.error('❌ Erro ao salvar na nuvem:', error);
+                    alert('❌ ERRO ao salvar: ' + error.message);
+                });
                 
                 // Limpar formulário
                 expenseForm.reset();
                 if (fileInput) fileInput.value = '';
                 document.getElementById('expense-type-fixed').checked = true;
-                document.getElementById('expense-date-group').style.display = 'none';
+                // Restaurar data atual após reset
+                document.getElementById('expense-date').value = getTodayDate();
             }
         }
 
@@ -2424,6 +2415,7 @@
 
         // Função para atualizar o resumo por categoria
         function updateCategorySummary() {
+            if (!categorySummary) return;
             categorySummary.innerHTML = '';
             
             let hasData = false;
@@ -2552,58 +2544,121 @@
 
         // Função para atualizar o saldo
         function updateBalance() {
-            // Calcular total de despesas fixas
-            const totalFixedExpenses = expenses
-                .filter(e => e.type === 'fixed')
-                .reduce((sum, e) => sum + e.amount, 0);
+            // DEBUG: Verificar array de despesas
+            console.log('🔍 Array expenses:', expenses);
+            console.log('🔍 Total de itens em expenses:', expenses.length);
             
-            // Calcular total de despesas eventuais
-            const totalOccasionalExpenses = expenses
-                .filter(e => e.type === 'occasional')
-                .reduce((sum, e) => sum + e.amount, 0);
-            
-            // Calcular total de receitas (fixas + eventuais)
+            // ========== CALCULAR RECEITAS ==========
+            // Calcular total de receitas fixas
             const totalFixedIncomes = extraIncomes
                 .filter(i => i.type === 'fixed')
                 .reduce((sum, i) => sum + i.amount, 0);
                 
+            // Calcular total de receitas eventuais
             const totalOccasionalIncomes = extraIncomes
                 .filter(i => i.type === 'occasional')
                 .reduce((sum, i) => sum + i.amount, 0);
             
-            // Receita Total = Receitas Fixas + Receitas Eventuais
+            // RECEITA TOTAL = Receitas Fixas + Receitas Eventuais
             const totalIncome = totalFixedIncomes + totalOccasionalIncomes;
             
-            // Despesas Total = Despesas Fixas + Despesas Eventuais  
+            // ========== CALCULAR DESPESAS ==========
+            // Calcular total de despesas fixas
+            const fixedExpensesArray = expenses.filter(e => e.type === 'fixed');
+            console.log('🔍 Despesas fixas filtradas:', fixedExpensesArray);
+            const totalFixedExpenses = fixedExpensesArray.reduce((sum, e) => sum + e.amount, 0);
+            
+            // Calcular total de despesas eventuais
+            const occasionalExpensesArray = expenses.filter(e => e.type === 'occasional');
+            console.log('🔍 Despesas eventuais filtradas:', occasionalExpensesArray);
+            const totalOccasionalExpenses = occasionalExpensesArray.reduce((sum, e) => sum + e.amount, 0);
+            
+            // DESPESAS TOTAIS = Despesas Fixas + Despesas Eventuais  
             const totalExpenses = totalFixedExpenses + totalOccasionalExpenses;
             
-            // Saldo Geral = Receita Total - Despesas Total
+            // ========== CALCULAR SALDO GERAL ==========
+            // SALDO GERAL = Receita Total - Despesas Totais
             const balance = totalIncome - totalExpenses;
             
-            // Atualizar displays
-            monthlyIncomeDisplay.textContent = formatCurrency(totalFixedIncomes);
-            fixedExpensesTotalDisplay.textContent = formatCurrency(totalFixedExpenses);
-            currentBalanceDisplay.textContent = formatCurrency(balance);
+            // DEBUG: Log dos valores
+            console.log('💰 === CÁLCULO DO SALDO ===');
+            console.log('Receitas Fixas:', formatCurrency(totalFixedIncomes));
+            console.log('Receitas Eventuais:', formatCurrency(totalOccasionalIncomes));
+            console.log('➡️ RECEITA TOTAL:', formatCurrency(totalIncome));
+            console.log('---');
+            console.log('Despesas Fixas:', formatCurrency(totalFixedExpenses));
+            console.log('Despesas Eventuais:', formatCurrency(totalOccasionalExpenses));
+            console.log('➡️ DESPESAS TOTAIS:', formatCurrency(totalExpenses));
+            console.log('---');
+            console.log('🎯 SALDO GERAL (Receitas - Despesas):', formatCurrency(balance));
+            console.log('========================');
             
-            // Atualizar display de receitas eventuais
+            // ========== ATUALIZAR DISPLAYS DO DASHBOARD ==========
+            // Receita Total e detalhes
+            const totalIncomeDisplay = document.getElementById('total-income-display');
+            const fixedIncomeDetail = document.getElementById('fixed-income-detail');
+            const occasionalIncomeDetail = document.getElementById('occasional-income-detail');
+            
+            if (totalIncomeDisplay) {
+                totalIncomeDisplay.textContent = formatCurrency(totalIncome);
+            }
+            if (fixedIncomeDetail) {
+                fixedIncomeDetail.textContent = formatCurrency(totalFixedIncomes);
+            }
+            if (occasionalIncomeDetail) {
+                occasionalIncomeDetail.textContent = formatCurrency(totalOccasionalIncomes);
+            }
+            
+            // Despesas Totais e detalhes
+            const totalExpensesDisplay = document.getElementById('total-expenses-display');
+            const fixedExpensesDetail = document.getElementById('fixed-expenses-detail');
+            const occasionalExpensesDetail = document.getElementById('occasional-expenses-detail');
+            
+            if (totalExpensesDisplay) {
+                totalExpensesDisplay.textContent = formatCurrency(totalExpenses);
+            }
+            if (fixedExpensesDetail) {
+                fixedExpensesDetail.textContent = formatCurrency(totalFixedExpenses);
+            }
+            if (occasionalExpensesDetail) {
+                occasionalExpensesDetail.textContent = formatCurrency(totalOccasionalExpenses);
+            }
+            
+            // Saldo Geral
+            if (currentBalanceDisplay) {
+                currentBalanceDisplay.textContent = formatCurrency(balance);
+                
+                // Atualizar cor e status conforme o saldo
+                if (balance >= 0) {
+                    currentBalanceDisplay.className = 'balance positive';
+                    balanceStatusDisplay.textContent = '✅ Saldo positivo!';
+                    balanceStatusDisplay.style.color = 'var(--secondary-color)';
+                } else {
+                    currentBalanceDisplay.className = 'balance negative';
+                    balanceStatusDisplay.textContent = '⚠️ Saldo negativo!';
+                    balanceStatusDisplay.style.color = 'var(--expense-color)';
+                }
+            }
+            
+            // ========== MANTER COMPATIBILIDADE COM CÓDIGO LEGADO ==========
+            // Alguns gráficos e análises podem ainda referenciar os IDs antigos
+            // Vamos manter esses elementos atualizados também
+            const monthlyIncomeDisplay = document.getElementById('monthly-income');
+            const fixedExpensesTotalDisplay = document.getElementById('fixed-expenses-total');
+            const occasionalIncomeTotalDisplay = document.getElementById('occasional-income-total');
+            const monthOccasionalTotalDisplay = document.getElementById('month-occasional-total');
+            
+            if (monthlyIncomeDisplay) {
+                monthlyIncomeDisplay.textContent = formatCurrency(totalFixedIncomes);
+            }
+            if (fixedExpensesTotalDisplay) {
+                fixedExpensesTotalDisplay.textContent = formatCurrency(totalFixedExpenses);
+            }
             if (occasionalIncomeTotalDisplay) {
                 occasionalIncomeTotalDisplay.textContent = formatCurrency(totalOccasionalIncomes);
             }
-            
-            // Atualizar display de despesas eventuais
-            const monthOccasionalTotalDisplay = document.getElementById('month-occasional-total');
             if (monthOccasionalTotalDisplay) {
                 monthOccasionalTotalDisplay.textContent = formatCurrency(totalOccasionalExpenses);
-            }
-            
-            if (balance >= 0) {
-                currentBalanceDisplay.className = 'balance positive';
-                balanceStatusDisplay.textContent = 'Seu saldo está positivo!';
-                balanceStatusDisplay.style.color = 'var(--secondary-color)';
-            } else {
-                currentBalanceDisplay.className = 'balance negative';
-                balanceStatusDisplay.textContent = 'Atenção: seu saldo está negativo!';
-                balanceStatusDisplay.style.color = 'var(--expense-color)';
             }
         }
         
@@ -2622,20 +2677,19 @@
                 .filter(e => e.date === today && e.type === 'occasional')
                 .reduce((sum, e) => sum + e.amount, 0);
             
-            // Calcular total de despesas EVENTUAIS do mês
-            const totalOccasionalExpenses = expenses
-                .filter(e => e.type === 'occasional')
-                .reduce((sum, e) => sum + e.amount, 0);
-            
-            // Atualizar displays
-            todayExpensesDisplay.textContent = formatCurrency(todayExpenses);
-            document.getElementById('month-occasional-total').textContent = formatCurrency(totalOccasionalExpenses);
+            // Atualizar display de despesas do dia (se existir)
+            if (todayExpensesDisplay) {
+                todayExpensesDisplay.textContent = formatCurrency(todayExpenses);
+            }
             
             // Atualizar histórico diário
             if (!dailyHistory[today]) {
                 dailyHistory[today] = {};
             }
             dailyHistory[today].expenses = todayExpenses;
+            
+            // Chamar updateBalance para recalcular tudo
+            updateBalance();
         }
         
         // ========== FUNÇÕES DE CONSIGNADOS ==========
@@ -3214,9 +3268,9 @@
                         <tr>
                             <th>Mês/Ano</th>
                             <th>Receita</th>
-                            <th>Despesas Fixas</th>
-                            <th>Despesas Eventuais</th>
-                            <th>Total Despesas</th>
+                            <th>💸 Despesas Fixas</th>
+                            <th>💸 Despesas Eventuais</th>
+                            <th>💸 Total Despesas</th>
                             <th>Saldo</th>
                         </tr>
                     </thead>
@@ -3908,8 +3962,9 @@
             updateDailyBalance();
             updateChart();
             
-            // Setar data padrão como hoje
+            // Setar data padrão como hoje nos campos de data
             document.getElementById('income-date').value = getTodayDate();
+            document.getElementById('expense-date').value = getTodayDate();
             
             // Verificar mudança de dia a cada minuto
             setInterval(checkAndProcessNewDay, 60000);

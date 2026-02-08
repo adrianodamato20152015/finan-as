@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espetaria do Chefe - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 60px;
+            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.3);
+            border: 4px solid #D2691E;
+            overflow: hidden;
+            padding: 10px;
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: #8B4513;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #8B4513;
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 69, 19, 0.3);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8B4513;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .version {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 100px;
+                height: 100px;
+                font-size: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <div class="logo">
+                <img src="espetaria do chefe/images.png" alt="Logo Espetaria do Chefe" onerror="this.parentElement.innerHTML='🍖'">
+            </div>
+            <h1>Espetaria do Chefe</h1>
+            <p class="subtitle">Sistema de Gestão</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Digite seu usuário"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #666;">Entrando...</p>
+        </div>
+
+        <div class="version">v1.0.0 - Espetaria do Chefe</div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDg6tZdEH3FWKaj4a1ZV0TzhhSO_EizLpU",
+            authDomain: "sistema-restaurantes-b8ee9.firebaseapp.com",
+            databaseURL: "https://sistema-restaurantes-b8ee9-default-rtdb.firebaseio.com",
+            projectId: "sistema-restaurantes-b8ee9",
+            storageBucket: "sistema-restaurantes-b8ee9.firebasestorage.app",
+            messagingSenderId: "872858152148",
+            appId: "1:872858152148:web:b190e2bb588fc96f9f1f41"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        window.database = database;
+
+        // ID do restaurante (detectado pela URL ou fixo para este restaurante)
+        // Exemplos de URL:
+        // - seu-app.com?rest=espetaria_do_chefe
+        // - seu-app.com?rest=pizzaria_bella
+        // - seu-app.com?rest=burger_king
+        const urlParams = new URLSearchParams(window.location.search);
+        const restauranteId = urlParams.get('rest') || 'espetaria_do_chefe'; // default
+
+        console.log('🏪 Restaurante ID:', restauranteId);
+
+        // Carregar configurações do restaurante e personalizar a tela
+        async function carregarConfigRestaurante() {
+            try {
+                const configRef = ref(database, `restaurantes/${restauranteId}/config`);
+                const snapshot = await get(configRef);
+                
+                if (snapshot.exists()) {
+                    const config = snapshot.val();
+                    
+                    // Atualizar logo
+                    if (config.logo) {
+                        document.querySelector('.logo').textContent = config.logo;
+                    }
+                    
+                    // Atualizar título
+                    if (config.nome) {
+                        document.querySelector('h1').textContent = config.nome;
+                        document.title = config.nome + ' - Login';
+                    }
+                    
+                    // Atualizar cores
+                    if (config.corPrimaria && config.corSecundaria) {
+                        const style = document.createElement('style');
+                        style.textContent = `
+                            body {
+                                background: linear-gradient(135deg, ${config.corPrimaria} 0%, ${config.corSecundaria} 100%);
+                            }
+                            .logo {
+                                background: linear-gradient(135deg, ${config.corPrimaria} 0%, ${config.corSecundaria} 100%);
+                            }
+                            h1 {
+                                color: ${config.corPrimaria};
+                            }
+                            input:focus {
+                                border-color: ${config.corPrimaria};
+                            }
+                            .btn-login {
+                                background: linear-gradient(135deg, ${config.corPrimaria} 0%, ${config.corSecundaria} 100%);
+                            }
+                            .spinner {
+                                border-top-color: ${config.corPrimaria};
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                    
+                    console.log('✅ Configuração do restaurante carregada:', config);
+                } else {
+                    console.log('⚠️ Restaurante não encontrado, usando configuração padrão');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar configuração:', error);
+            }
+        }
+
+        // Carregar configurações ao iniciar
+        carregarConfigRestaurante();
+
+        // Elementos do DOM
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loading = document.getElementById('loading');
+
+        // Função para mostrar erro
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        // Função de login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showError('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            // Mostrar loading
+            loading.classList.add('show');
+            loginForm.style.display = 'none';
+
+            try {
+                // Buscar usuário no Firebase
+                const userRef = ref(database, `restaurantes/${restauranteId}/usuarios/${username}`);
+                const snapshot = await get(userRef);
+
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    
+                    // Verificar senha (em produção, use hash!)
+                    if (userData.senha === password) {
+                        // Login bem-sucedido
+                        // Salvar dados do usuário na sessão
+                        sessionStorage.setItem('user', JSON.stringify({
+                            username: username,
+                            nome: userData.nome,
+                            perfil: userData.perfil,
+                            restauranteId: restauranteId
+                        }));
+
+                        // Redirecionar para o app
+                        window.location.href = 'app.html';
+                    } else {
+                        showError('Senha incorreta!');
+                        loading.classList.remove('show');
+                        loginForm.style.display = 'block';
+                    }
+                } else {
+                    showError('Usuário não encontrado!');
+                    loading.classList.remove('show');
+                    loginForm.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao fazer login:', error);
+                showError('Erro ao conectar. Tente novamente.');
+                loading.classList.remove('show');
+                loginForm.style.display = 'block';
+            }
+        });
+
+        // Auto-focus no campo de usuário
+        document.getElementById('username').focus();
+    </script>
+</body>
+</html>

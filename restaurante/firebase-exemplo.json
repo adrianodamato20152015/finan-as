@@ -1,0 +1,135 @@
+{
+  "restaurantes": {
+    "espetaria_do_chefe": {
+      "config": {
+        "nome": "Espetaria do Chefe",
+        "logo": "🍖",
+        "corPrimaria": "#8B4513",
+        "corSecundaria": "#D2691E",
+        "endereco": "Rua das Carnes, 123",
+        "telefone": "(11) 98765-4321",
+        "email": "contato@espetariadochefe.com"
+      },
+      "usuarios": {
+        "admin": {
+          "nome": "Administrador",
+          "perfil": "gerente",
+          "senha": "123456"
+        },
+        "joao": {
+          "nome": "João Silva",
+          "perfil": "atendimento",
+          "senha": "senha123"
+        },
+        "maria": {
+          "nome": "Maria Santos",
+          "perfil": "cozinha",
+          "senha": "senha123"
+        },
+        "carlos": {
+          "nome": "Carlos Oliveira",
+          "perfil": "caixa",
+          "senha": "senha123"
+        }
+      },
+      "cardapio": {
+        "exemplo_item": {
+          "nome": "Espeto de Picanha",
+          "descricao": "Espeto com 200g de picanha nobre",
+          "preco": 29.90,
+          "categoria": "Espetos",
+          "disponivel": true
+        }
+      },
+      "mesas": {
+        "mesa1": {
+          "numero": 1,
+          "capacidade": 4,
+          "status": "livre"
+        },
+        "mesa2": {
+          "numero": 2,
+          "capacidade": 6,
+          "status": "ocupada"
+        }
+      },
+      "pedidos": {
+        "exemplo_pedido": {
+          "mesa": "mesa1",
+          "itens": [
+            {
+              "nome": "Espeto de Picanha",
+              "quantidade": 2,
+              "preco": 29.90
+            }
+          ],
+          "total": 59.80,
+          "status": "preparando",
+          "horario": "2026-02-08T18:30:00",
+          "atendente": "joao"
+        }
+      }
+    },
+    "pizzaria_bella": {
+      "config": {
+        "nome": "Pizzaria Bella",
+        "logo": "🍕",
+        "corPrimaria": "#E74C3C",
+        "corSecundaria": "#F39C12",
+        "endereco": "Av. Itália, 456",
+        "telefone": "(11) 98888-7777",
+        "email": "contato@pizzariabella.com"
+      },
+      "usuarios": {
+        "mario": {
+          "nome": "Mario Pizzaiolo",
+          "perfil": "gerente",
+          "senha": "pizza123"
+        }
+      },
+      "cardapio": {
+        "margherita": {
+          "nome": "Pizza Margherita",
+          "descricao": "Molho, mussarela, tomate e manjericão",
+          "preco": 42.00,
+          "categoria": "Pizzas",
+          "disponivel": true
+        }
+      },
+      "mesas": {
+        "mesa1": {
+          "numero": 1,
+          "capacidade": 2,
+          "status": "livre"
+        }
+      }
+    },
+    "burger_king": {
+      "config": {
+        "nome": "Burger King Centro",
+        "logo": "🍔",
+        "corPrimaria": "#D62300",
+        "corSecundaria": "#F5A623",
+        "endereco": "Praça Central, 789",
+        "telefone": "(11) 99999-0000",
+        "email": "gerente@bkcentro.com"
+      },
+      "usuarios": {
+        "gerente": {
+          "nome": "Gerente BK",
+          "perfil": "gerente",
+          "senha": "bk2026"
+        }
+      },
+      "cardapio": {
+        "whopper": {
+          "nome": "Whopper",
+          "descricao": "O clássico Whopper",
+          "preco": 24.90,
+          "categoria": "Burgers",
+          "disponivel": true
+        }
+      }
+    }
+  }
+}
